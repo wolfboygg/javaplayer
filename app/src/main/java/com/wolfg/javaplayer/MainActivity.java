@@ -4,10 +4,14 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.view.View;
 
 import com.wolfg.javaplayer.opengl.OpenGLController;
+
+import javax.microedition.khronos.egl.EGLConfig;
+import javax.microedition.khronos.opengles.GL10;
 
 public class MainActivity extends AppCompatActivity {
 
