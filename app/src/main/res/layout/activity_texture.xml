@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".TextureActivity">
 
-    <com.wolfgg.filterlibrary.view.WolfGLSurfaceView
+    <com.wolfgg.filterlibrary.texture.WolfGLTextureView
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
