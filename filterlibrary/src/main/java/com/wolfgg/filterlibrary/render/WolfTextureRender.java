@@ -7,6 +7,7 @@ import com.wolfgg.filterlibrary.BuildConfig;
 import com.wolfgg.filterlibrary.R;
 import com.wolfgg.filterlibrary.utils.LogHelper;
 import com.wolfgg.filterlibrary.utils.ShaderUtils;
+import com.wolfgg.filterlibrary.utils.UiUtils;
 import com.wolfgg.filterlibrary.view.WolfEGLSurfaceView;
 
 import java.nio.ByteBuffer;
@@ -27,6 +28,9 @@ import java.nio.FloatBuffer;
  * 3. 分配vbo需要的缓存大小
  * 4. 为vbo设置顶点数据的值
  * 5. 解绑vbo
+ *
+ * FBO 最后要将绘制到fbo的纹理绘制到一个窗口才能显示
+ *
  */
 
 public class WolfTextureRender implements WolfEGLSurfaceView.WolfGLRender {
@@ -39,10 +43,10 @@ public class WolfTextureRender implements WolfEGLSurfaceView.WolfGLRender {
     protected FloatBuffer mFragmentFloatBuffer;
 
     private float[] vertex = {
-            -1.0f, -1.0f,
             -1.0f, 1.0f,
-            1.0f, -1.0f,
-            1.0f, 1.0f
+            -1.0f, -1.0f,
+            1.0f, 1.0f,
+            1.0f, -1.0f
     };
 
     private float[] fragment = {
@@ -59,11 +63,17 @@ public class WolfTextureRender implements WolfEGLSurfaceView.WolfGLRender {
     private int sampler; // 纹理
 
     private int vboId;
+    private int fboId;
 
     private int imgTextureId;
 
+    private int textureId; // 这个用来将所有存储所有的信息，这个纹理存有所有的效果
+
+    private FBORender mFBORender;
+
     public WolfTextureRender(Context context) {
         mContext = context;
+        mFBORender = new FBORender(context);
         mVertexFloatBuffer = ByteBuffer.allocateDirect(vertex.length * 4)
                 .order(ByteOrder.nativeOrder())
                 .asFloatBuffer()
@@ -81,6 +91,7 @@ public class WolfTextureRender implements WolfEGLSurfaceView.WolfGLRender {
         if (BuildConfig.DEBUG) {
             LogHelper.i(TAG, "onSurfaceCreate");
         }
+        mFBORender.onCreated();
         String vertexSource = ShaderUtils.getRawResource(mContext, R.raw.vertex_shader);
         String fragmentSource = ShaderUtils.getRawResource(mContext, R.raw.fragment_shader);
         mProgram = ShaderUtils.createProgram(vertexSource, fragmentSource);
@@ -90,6 +101,8 @@ public class WolfTextureRender implements WolfEGLSurfaceView.WolfGLRender {
         sampler = GLES20.glGetUniformLocation(mProgram, "sTexture");
 
         createVBO();
+
+        createFBO();
 
         imgTextureId = ShaderUtils.loadTexture(mContext, R.drawable.androids);
 
@@ -108,6 +121,7 @@ public class WolfTextureRender implements WolfEGLSurfaceView.WolfGLRender {
         if (BuildConfig.DEBUG) {
             LogHelper.i(TAG, "wolf texture render draw");
         }
+        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, fboId);
         GLES20.glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
 
@@ -120,6 +134,8 @@ public class WolfTextureRender implements WolfEGLSurfaceView.WolfGLRender {
         //使用绘制三角形的方式进行绘制
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
+        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
+        mFBORender.onDraw(textureId);
     }
 
     private void drawNormal() {
@@ -129,6 +145,49 @@ public class WolfTextureRender implements WolfEGLSurfaceView.WolfGLRender {
 
         GLES20.glEnableVertexAttribArray(fPosition);
         GLES20.glVertexAttribPointer(fPosition, 2, GLES20.GL_FLOAT, false, 8, mFragmentFloatBuffer);
+    }
+
+    /**
+     * 创建FBO
+     */
+    private void createFBO() { // 需要将所有的数据绑定一个纹理上
+        int[] fbos = new int[1];
+        GLES20.glGenFramebuffers(1, fbos, 0);
+        fboId = fbos[0];
+        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, fboId);
+
+        // 创建一个纹理
+        int[] textureIds = new int[1];
+        GLES20.glGenTextures(1, textureIds, 0);
+        textureId = textureIds[0];
+
+        // 绑定纹理
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId);
+
+        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+        GLES20.glUniform1i(sampler, 0);
+
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_REPEAT);
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_REPEAT);
+
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
+
+        GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA, UiUtils.getScreenWidthPixels(mContext), UiUtils.getScreenHeightPixels(mContext), 0, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, null);
+        // 绑定到fbo 将数据
+        GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0, GLES20.GL_TEXTURE_2D, textureId, 0);
+        if (GLES20.glCheckFramebufferStatus(GLES20.GL_FRAMEBUFFER) != GLES20.GL_FRAMEBUFFER_COMPLETE) {
+            if (BuildConfig.DEBUG) {
+                LogHelper.i(TAG, "fbo wrong");
+            }
+        } else {
+            if (BuildConfig.DEBUG) {
+                LogHelper.i(TAG, "fbo success");
+            }
+        }
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
+        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
+
     }
 
 
@@ -160,6 +219,10 @@ public class WolfTextureRender implements WolfEGLSurfaceView.WolfGLRender {
         GLES20.glEnableVertexAttribArray(fPosition);
         GLES20.glVertexAttribPointer(fPosition, 2, GLES20.GL_FLOAT, false, 8, vertex.length * 4);
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
+    }
+
+    public interface OnRenderCreateListener {
+        void onCreate(int textureId);
     }
 
 

@@ -29,5 +29,4 @@ public class WolfGLTextureView extends WolfEGLSurfaceView {
         setRenderMode(WolfEGLSurfaceView.RENDERMODE_WHEN_DIRTY);
     }
 
-
 }
