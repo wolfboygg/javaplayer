@@ -2,6 +2,7 @@ package com.wolfgg.filterlibrary.render;
 
 import android.content.Context;
 import android.opengl.GLES20;
+import android.opengl.Matrix;
 
 import com.wolfgg.filterlibrary.BuildConfig;
 import com.wolfgg.filterlibrary.R;
@@ -28,9 +29,8 @@ import java.nio.FloatBuffer;
  * 3. 分配vbo需要的缓存大小
  * 4. 为vbo设置顶点数据的值
  * 5. 解绑vbo
- *
+ * <p>
  * FBO 最后要将绘制到fbo的纹理绘制到一个窗口才能显示
- *
  */
 
 public class WolfTextureRender implements WolfEGLSurfaceView.WolfGLRender {
@@ -61,6 +61,9 @@ public class WolfTextureRender implements WolfEGLSurfaceView.WolfGLRender {
     private int vPosition; // 顶点坐标
     private int fPosition; // 纹理坐标
     private int sampler; // 纹理
+    private int umatrix; // 举证
+
+    private float[] matrix = new float[16];
 
     private int vboId;
     private int fboId;
@@ -92,13 +95,14 @@ public class WolfTextureRender implements WolfEGLSurfaceView.WolfGLRender {
             LogHelper.i(TAG, "onSurfaceCreate");
         }
         mFBORender.onCreated();
-        String vertexSource = ShaderUtils.getRawResource(mContext, R.raw.vertex_shader);
+        String vertexSource = ShaderUtils.getRawResource(mContext, R.raw.vertex_shader_m);
         String fragmentSource = ShaderUtils.getRawResource(mContext, R.raw.fragment_shader);
         mProgram = ShaderUtils.createProgram(vertexSource, fragmentSource);
 
         vPosition = GLES20.glGetAttribLocation(mProgram, "v_Position");
         fPosition = GLES20.glGetAttribLocation(mProgram, "f_Position");
         sampler = GLES20.glGetUniformLocation(mProgram, "sTexture");
+        umatrix = GLES20.glGetUniformLocation(mProgram, "u_Matrix");
 
         createVBO();
 
@@ -114,6 +118,12 @@ public class WolfTextureRender implements WolfEGLSurfaceView.WolfGLRender {
             LogHelper.i(TAG, "onSurfaceChange");
         }
         GLES20.glViewport(0, 0, width, height);
+
+        if (width > height) {// 这里应该使用图片和视频的比例进行处理
+            Matrix.orthoM(matrix, 0, -width / ((height / 702f) * 526f), width / ((height / 702f) * 526f), -1f, 1f, -1f, 1f);
+        } else {
+            Matrix.orthoM(matrix, 0, -1, 1, -height / ((width / 526f) * 702f), height / ((width / 526f) * 702f), -1f, 1f);
+        }
     }
 
     @Override
@@ -128,6 +138,9 @@ public class WolfTextureRender implements WolfEGLSurfaceView.WolfGLRender {
         // 进行绘制
         GLES20.glUseProgram(mProgram);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, imgTextureId);
+
+        // 使用矩阵
+        GLES20.glUniformMatrix4fv(umatrix, 1, false, matrix, 0);
 
         drawUserVBO();
 
