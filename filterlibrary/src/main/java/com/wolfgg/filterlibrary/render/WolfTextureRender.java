@@ -74,6 +74,8 @@ public class WolfTextureRender implements WolfEGLSurfaceView.WolfGLRender {
 
     private FBORender mFBORender;
 
+    private OnRenderCreateListener mOnRenderCreateListener;
+
     public WolfTextureRender(Context context) {
         mContext = context;
         mFBORender = new FBORender(context);
@@ -87,6 +89,10 @@ public class WolfTextureRender implements WolfEGLSurfaceView.WolfGLRender {
                 .put(fragment);
         mVertexFloatBuffer.position(0);
         mFragmentFloatBuffer.position(0);
+    }
+
+    public void setOnRenderCreateListener(OnRenderCreateListener onRenderCreateListener) {
+        mOnRenderCreateListener = onRenderCreateListener;
     }
 
     @Override
@@ -109,6 +115,10 @@ public class WolfTextureRender implements WolfEGLSurfaceView.WolfGLRender {
         createFBO();
 
         imgTextureId = ShaderUtils.loadTexture(mContext, R.drawable.androids);
+
+        if (mOnRenderCreateListener != null) {
+            mOnRenderCreateListener.onCreate(textureId);
+        }
 
     }
 

@@ -53,7 +53,7 @@ public class WolfEGLSurfaceView extends SurfaceView implements SurfaceHolder.Cal
         this.mEGLContext = eglContext;
     }
 
-    public void setWolfGLRender(WolfGLRender wolfGLRender) {
+    public void setRender(WolfGLRender wolfGLRender) {
         mWolfGLRender = wolfGLRender;
     }
 

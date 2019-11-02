@@ -25,8 +25,11 @@ public class WolfGLTextureView extends WolfEGLSurfaceView {
     public WolfGLTextureView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mWolfTextureRender = new WolfTextureRender(this.getContext());
-        setWolfGLRender(mWolfTextureRender);
+        setRender(mWolfTextureRender);
         setRenderMode(WolfEGLSurfaceView.RENDERMODE_WHEN_DIRTY);
     }
 
+    public WolfTextureRender getWolfTextureRender() {
+        return mWolfTextureRender;
+    }
 }

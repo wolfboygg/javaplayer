@@ -80,7 +80,7 @@ public class EGLHelper {
         };
 
         if (eglContext != null) {
-            mEGLContext = mEGL10.eglCreateContext(mEGLDisplay, configs[0], mEGLContext, attrib_list);
+            mEGLContext = mEGL10.eglCreateContext(mEGLDisplay, configs[0], eglContext, attrib_list);
         } else {
             mEGLContext = mEGL10.eglCreateContext(mEGLDisplay, configs[0], EGL10.EGL_NO_CONTEXT, attrib_list);
         }

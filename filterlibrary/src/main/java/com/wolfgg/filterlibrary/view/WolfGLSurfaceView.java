@@ -20,7 +20,7 @@ public class WolfGLSurfaceView extends WolfEGLSurfaceView {
 
     public WolfGLSurfaceView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        setWolfGLRender(new WolfRender());
+        setRender(new WolfRender());
         setRenderMode(WolfEGLSurfaceView.RENDERMODE_WHEN_DIRTY);
     }
 }
