@@ -3,6 +3,7 @@ package com.wolfg.javaplayer;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.wolfgg.filterlibrary.render.WolfTextureRender;
@@ -29,6 +30,12 @@ public class TextureActivity extends AppCompatActivity {
                        WolfMutiSurfaceView wolfMutiSurfaceView = new WolfMutiSurfaceView(TextureActivity.this);
                        wolfMutiSurfaceView.setTextureId(textureId);
                        wolfMutiSurfaceView.setSurfaceAndEglContext(null, mWolfGLTextureView.getEGLContext());
+
+                       LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+                       lp.width = 200;
+                       lp.height = 300;
+                       wolfMutiSurfaceView.setLayoutParams(lp);
+
                        mLyContent.addView(wolfMutiSurfaceView);
                    }
                });

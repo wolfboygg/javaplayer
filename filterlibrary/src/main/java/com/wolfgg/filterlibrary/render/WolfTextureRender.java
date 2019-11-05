@@ -74,6 +74,9 @@ public class WolfTextureRender implements WolfEGLSurfaceView.WolfGLRender {
 
     private FBORender mFBORender;
 
+    private int width;
+    private int height;
+
     private OnRenderCreateListener mOnRenderCreateListener;
 
     public WolfTextureRender(Context context) {
@@ -127,7 +130,13 @@ public class WolfTextureRender implements WolfEGLSurfaceView.WolfGLRender {
         if (BuildConfig.DEBUG) {
             LogHelper.i(TAG, "onSurfaceChange");
         }
-        GLES20.glViewport(0, 0, width, height);
+//        GLES20.glViewport(0, 0, width, height);
+
+        this.width = width;
+        this.height = height;
+
+        width = UiUtils.getScreenWidthPixels(mContext);
+        height = UiUtils.getScreenHeightPixels(mContext);
 
         if (width > height) {// 这里应该使用图片和视频的比例进行处理
             Matrix.orthoM(matrix, 0, -width / ((height / 702f) * 526f), width / ((height / 702f) * 526f), -1f, 1f, -1f, 1f);
@@ -141,8 +150,12 @@ public class WolfTextureRender implements WolfEGLSurfaceView.WolfGLRender {
         if (BuildConfig.DEBUG) {
             LogHelper.i(TAG, "wolf texture render draw");
         }
+
+        // 设置手机屏幕大小
+        GLES20.glViewport(0, 0, UiUtils.getScreenWidthPixels(mContext), UiUtils.getScreenHeightPixels(mContext));
+
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, fboId);
-        GLES20.glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
+        GLES20.glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
 
         // 进行绘制
@@ -157,6 +170,8 @@ public class WolfTextureRender implements WolfEGLSurfaceView.WolfGLRender {
         //使用绘制三角形的方式进行绘制
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
+
+        GLES20.glViewport(0, 0, width, height);// 在还原到原来的视觉大小
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
         mFBORender.onDraw(textureId);
     }
