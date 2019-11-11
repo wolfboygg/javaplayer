@@ -21,6 +21,8 @@ public class WolfCamera {
     private int width;
     private int height;
 
+    private boolean isFocusing = false;
+
     public WolfCamera(Context context) {
         this.width = UiUtils.getScreenWidthPixels(context);
         this.height = UiUtils.getScreenHeightPixels(context);
@@ -46,13 +48,38 @@ public class WolfCamera {
             size = getFitSize(parameters.getSupportedPreviewSizes());
             parameters.setPreviewSize(size.width, size.height);
 
+            // 添加自动对焦功能
+            List<String> focusModes = parameters.getSupportedFocusModes();
+            if (focusModes.contains(Camera.Parameters.FOCUS_MODE_AUTO)) {
+                parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
+            } else if (focusModes.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO)) {
+                parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
+            }
+
             mCamera.setParameters(parameters);
             mCamera.startPreview();
+
+            // 进行对焦
+            isFocusing = false;
+            startAutoFocus();
 
         } catch (Exception e) {
             e.printStackTrace();
         }
 
+    }
+
+    public void startAutoFocus() {
+        if (mCamera != null && !isFocusing) {
+            mCamera.cancelAutoFocus();
+            isFocusing = true;
+            mCamera.autoFocus(new Camera.AutoFocusCallback() {
+                @Override
+                public void onAutoFocus(boolean success, Camera camera) {
+                    isFocusing = false;
+                }
+            });
+        }
     }
 
 

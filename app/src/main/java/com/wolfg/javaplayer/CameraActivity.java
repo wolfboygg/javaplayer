@@ -1,7 +1,9 @@
 package com.wolfg.javaplayer;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 
 import com.wolfgg.cameralibrary.camera.WolfCameraView;
@@ -23,5 +25,9 @@ public class CameraActivity extends AppCompatActivity {
         mWolfCameraView.onDestroy();
     }
 
-
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        mWolfCameraView.previewAngle(this);
+    }
 }

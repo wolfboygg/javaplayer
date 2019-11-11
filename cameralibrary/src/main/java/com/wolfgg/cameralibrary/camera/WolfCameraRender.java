@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.SurfaceTexture;
 import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
+import android.opengl.Matrix;
 
 import com.wolfgg.cameralibrary.R;
 import com.wolfgg.filterlibrary.utils.LogHelper;
@@ -65,6 +66,9 @@ public class WolfCameraRender implements WolfEGLSurfaceView.WolfGLRender, Surfac
 
     private WolfCameraFBORender mWolfCameraFBORender;
 
+    private int umtraix;
+    private float[] matrix = new float[16];
+
 
     private OnSurfaceCreateListener mOnSurfaceCreateListener;
 
@@ -104,6 +108,8 @@ public class WolfCameraRender implements WolfEGLSurfaceView.WolfGLRender, Surfac
         mProgram = ShaderUtils.createProgram(vertexSource, fragmentSource);
         vPosition = GLES20.glGetAttribLocation(mProgram, "v_Position");
         fPosition = GLES20.glGetAttribLocation(mProgram, "f_Position");
+        // 获取矩阵
+        umtraix = GLES20.glGetUniformLocation(mProgram, "u_Matrix");
 
         // vbo
         int[] vbos = new int[1];
@@ -163,8 +169,17 @@ public class WolfCameraRender implements WolfEGLSurfaceView.WolfGLRender, Surfac
 
         GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, 0);
 
-
     }
+
+    // 初始化矩阵
+    public void resetMatrix() {
+        Matrix.setIdentityM(matrix, 0);
+    }
+
+    public void setAngle(float angle, float x, float y, float z) {
+        Matrix.rotateM(matrix, 0, angle, x, y, z);
+    }
+
 
     @Override
     public void onSurfaceChange(int width, int height) {
@@ -182,6 +197,8 @@ public class WolfCameraRender implements WolfEGLSurfaceView.WolfGLRender, Surfac
         // 开始绘制到fbo上
         GLES20.glUseProgram(mProgram);
         GLES20.glViewport(0, 0, screenWidth, screenHeight);
+        // 使用矩阵 第二个参数是更新的矩阵的数量
+        GLES20.glUniformMatrix4fv(umtraix, 1, false, matrix, 0);
 
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, fboId);
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, vboId);
