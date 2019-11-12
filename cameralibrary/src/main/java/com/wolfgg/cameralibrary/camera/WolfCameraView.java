@@ -22,7 +22,7 @@ public class WolfCameraView extends WolfEGLSurfaceView {
 
     private WolfCamera mWolfCamera;
 
-    private int cameraId = Camera.CameraInfo.CAMERA_FACING_FRONT;
+    private int cameraId = Camera.CameraInfo.CAMERA_FACING_BACK;
 
     public WolfCameraView(Context context) {
         this(context, null);
