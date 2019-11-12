@@ -35,6 +35,10 @@ public class WolfCameraView extends WolfEGLSurfaceView {
     public WolfCameraView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         // 设置render
+        initRender(context);
+    }
+
+    private void initRender(Context context) {
         mWolfCameraRender = new WolfCameraRender(context);
         mWolfCamera = new WolfCamera(context);
         setRender(mWolfCameraRender);
@@ -104,23 +108,20 @@ public class WolfCameraView extends WolfEGLSurfaceView {
         }
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-
-        if (event.getPointerCount() == 1 && event.getAction() == MotionEvent.ACTION_DOWN) {
-            startAutoFocus(event.getX(), event.getY());
-        }
-
-        return true;
-    }
-
-    private void startAutoFocus(float x, float y) {
+    public void startAutoFocus() {
         //后置摄像头才有对焦功能
         if (mWolfCamera != null && cameraId == Camera.CameraInfo.CAMERA_FACING_FRONT) {
             return;
         }
-        // TODO 这里有个一对焦动画
         mWolfCamera.startAutoFocus();
+    }
 
+    public void changeCamera() {
+        if (cameraId == Camera.CameraInfo.CAMERA_FACING_BACK) {
+            cameraId = Camera.CameraInfo.CAMERA_FACING_FRONT;
+        } else {
+            cameraId = Camera.CameraInfo.CAMERA_FACING_BACK;
+        }
+        mWolfCamera.changeCamera(cameraId);
     }
 }

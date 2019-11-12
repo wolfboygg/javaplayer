@@ -86,6 +86,7 @@ public class WolfCamera {
     public void stopPreview() {
         if (mCamera != null) {
             mCamera.startPreview();
+            mCamera.setPreviewCallback(null);
             mCamera.release();
             mCamera = null;
         }
