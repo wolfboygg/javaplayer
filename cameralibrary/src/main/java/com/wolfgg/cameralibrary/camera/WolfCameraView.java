@@ -22,7 +22,7 @@ public class WolfCameraView extends WolfEGLSurfaceView {
 
     private WolfCamera mWolfCamera;
 
-    private int cameraId = Camera.CameraInfo.CAMERA_FACING_BACK;
+    private int cameraId = Camera.CameraInfo.CAMERA_FACING_FRONT;
 
     public WolfCameraView(Context context) {
         this(context, null);
@@ -77,7 +77,9 @@ public class WolfCameraView extends WolfEGLSurfaceView {
                     mWolfCameraRender.setAngle(180, 0, 1, 0);
 
                 } else {
-                    mWolfCameraRender.setAngle(90f, 0, 0, 1);
+//                    mWolfCameraRender.setAngle(90f, 0, 0, 1);
+                    mWolfCameraRender.setAngle(180, 1, 0, 0);
+                    mWolfCameraRender.setAngle(180, 0, 1, 0);
                 }
                 break;
             case Surface.ROTATION_180:
