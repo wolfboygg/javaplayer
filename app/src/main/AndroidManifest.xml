@@ -16,8 +16,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity
-            android:name=".CameraActivity"
+        <activity android:name=".VideoActivity"
             android:configChanges="orientation|keyboardHidden|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -25,8 +24,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SplitShaderActivity"></activity>
-        <activity android:name=".TextureActivity"></activity>
+        <activity
+            android:name=".CameraActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize">
+
+        </activity>
+        <activity android:name=".SplitShaderActivity" />
+        <activity android:name=".TextureActivity" />
         <activity android:name=".PlayYUV" />
         <activity android:name=".MainActivity" />
     </application>

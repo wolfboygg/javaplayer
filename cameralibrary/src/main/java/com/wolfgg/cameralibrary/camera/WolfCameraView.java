@@ -22,6 +22,8 @@ public class WolfCameraView extends WolfEGLSurfaceView {
 
     private WolfCamera mWolfCamera;
 
+    private int mTextureId;
+
     private int cameraId = Camera.CameraInfo.CAMERA_FACING_BACK;
 
     public WolfCameraView(Context context) {
@@ -49,6 +51,7 @@ public class WolfCameraView extends WolfEGLSurfaceView {
             public void onSurfaceCreate(SurfaceTexture surfaceTexture, int textureId) {
                 // 设置给相机
                 mWolfCamera.initCamera(surfaceTexture, cameraId);
+                mTextureId = textureId;
             }
         });
     }
@@ -126,4 +129,9 @@ public class WolfCameraView extends WolfEGLSurfaceView {
         }
         mWolfCamera.changeCamera(cameraId);
     }
+
+    public int getTextureId() {
+        return mTextureId;
+    }
+
 }

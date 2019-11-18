@@ -164,7 +164,8 @@ public class WolfCameraRender implements WolfEGLSurfaceView.WolfGLRender, Surfac
 
         // 然后通过回调出去
         if (mOnSurfaceCreateListener != null) {
-            mOnSurfaceCreateListener.onSurfaceCreate(mSurfaceTexture, cameraTextureId);
+            // 这里一定回调的是离屏渲染的id
+            mOnSurfaceCreateListener.onSurfaceCreate(mSurfaceTexture, fboTextureId);
         }
 
         GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, 0);
