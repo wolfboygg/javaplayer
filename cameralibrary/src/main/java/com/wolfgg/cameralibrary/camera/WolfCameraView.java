@@ -13,6 +13,12 @@ import com.wolfgg.filterlibrary.view.WolfEGLSurfaceView;
 
 /**
  * 一个用来显示相机预览的界面
+ *
+ * 我们所有制作的视频是通过相机预览实现的，
+ * 那我们添加水印的时候首先要通过给预览增加
+ * 一个通过也要给视频纹理添加一个，我们是通过共享纹理实现的。
+ * 只不过录制的纹理我们是看不到的。如果不添加的时候我们看不到录制的视频有水印
+ *
  */
 public class WolfCameraView extends WolfEGLSurfaceView {
 

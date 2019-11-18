@@ -12,6 +12,13 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
+
+/**
+ * 我们把水印加到FBORender上，
+ * 这样我们共享的纹理其实是没有水印的，
+ * 所以我们要在两个地方添加绘制水印的处理
+ */
+
 public class WolfCameraFBORender {
 
     private Context context;
@@ -52,23 +59,23 @@ public class WolfCameraFBORender {
     public WolfCameraFBORender(Context context) {
         this.context = context;
 
-//        bitmap = ShaderUtils.createTextImage("视频直播和推流：ywl5320", 50, "#ff0000", "#00000000", 0);
+        bitmap = ShaderUtils.createTextImage("视频直播和推流：WolfG", 50, "#ff0000", "#00000000", 0);
 
 
-//        float r = 1.0f * bitmap.getWidth() / bitmap.getHeight();
-//        float w = r * 0.1f;
-//
-//        vertexData[8] = 0.8f - w;
-//        vertexData[9] = -0.8f;
-//
-//        vertexData[10] = 0.8f;
-//        vertexData[11] = -0.8f;
-//
-//        vertexData[12] = 0.8f - w;
-//        vertexData[13] = -0.7f;
-//
-//        vertexData[14] = 0.8f;
-//        vertexData[15] = -0.7f;
+        float r = 1.0f * bitmap.getWidth() / bitmap.getHeight();
+        float w = r * 0.1f; // 定义高为0.1所有宽就是比例*0.1f
+
+        vertexData[8] = 0.8f - w;
+        vertexData[9] = -0.8f;
+
+        vertexData[10] = 0.8f;
+        vertexData[11] = -0.8f;
+
+        vertexData[12] = 0.8f - w;
+        vertexData[13] = -0.7f;
+
+        vertexData[14] = 0.8f;
+        vertexData[15] = -0.7f;
 
         vertexBuffer = ByteBuffer.allocateDirect(vertexData.length * 4)
                 .order(ByteOrder.nativeOrder())
@@ -108,7 +115,7 @@ public class WolfCameraFBORender {
         GLES20.glBufferSubData(GLES20.GL_ARRAY_BUFFER, vertexData.length * 4, fragmentData.length * 4, fragmentBuffer);
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
 
-//        bitmapTextureid = ShaderUtils.loadBitmapTexture(bitmap);
+        bitmapTextureid = ShaderUtils.loadBitmapTexture(bitmap);
     }
 
     public void onChange(int width, int height) {
@@ -135,18 +142,18 @@ public class WolfCameraFBORender {
 
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
 
-//        //bitmap
-//        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, bitmapTextureid);
-//
-//        GLES20.glEnableVertexAttribArray(vPosition);
-//        GLES20.glVertexAttribPointer(vPosition, 2, GLES20.GL_FLOAT, false, 8,
-//                32);
-//
-//        GLES20.glEnableVertexAttribArray(fPosition);
-//        GLES20.glVertexAttribPointer(fPosition, 2, GLES20.GL_FLOAT, false, 8,
-//                vertexData.length * 4);
-//
-//        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
+        //bitmap
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, bitmapTextureid);
+
+        GLES20.glEnableVertexAttribArray(vPosition);
+        GLES20.glVertexAttribPointer(vPosition, 2, GLES20.GL_FLOAT, false, 8,
+                32);
+
+        GLES20.glEnableVertexAttribArray(fPosition);
+        GLES20.glVertexAttribPointer(fPosition, 2, GLES20.GL_FLOAT, false, 8,
+                vertexData.length * 4);
+
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
 
 
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
