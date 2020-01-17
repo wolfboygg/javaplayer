@@ -1,1 +1,1 @@
-include ':app', ':filterlibrary', ':cameralibrary'
+include ':app', ':filterlibrary', ':cameralibrary', ':ffmpeglibrary'

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".FFmpegActivity">
+
+    <LinearLayout
+        android:id="@+id/info_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <Button
+            android:id="@+id/get_protocol_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:text="Protocol" />
+
+        <Button
+            android:id="@+id/get_format_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:text="Format" />
+
+        <Button
+            android:id="@+id/get_codec_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:text="Codec" />
+
+        <Button
+            android:id="@+id/get_filter_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:text="Filter" />
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/video_view_container"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="#F00"
+        app:layout_constraintDimensionRatio="16:9"
+        app:layout_constraintTop_toBottomOf="@+id/info_container">
+
+        <com.ggwolf.ffmpeglibrary.view.PlayView
+            android:id="@+id/play_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <Button
+            android:id="@+id/start_btn"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:text="播放"
+            android:layout_gravity="end|bottom" />
+
+        <Button
+            android:id="@+id/pcm_start"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:text="PCM"
+            android:layout_gravity="bottom"/>
+
+    </FrameLayout>
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/video_view_container">
+
+        <TextView
+            android:id="@+id/tv_video_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#000"
+            android:textSize="20sp"
+
+            />
+
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
