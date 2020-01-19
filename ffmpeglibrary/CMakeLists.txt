@@ -14,7 +14,15 @@ set(distribution_DIR ../../../../libs)
 # 库源码文件：src/main/cpp/native-lib.cpp
 add_library( myffmpeg
         SHARED
-        src/main/cpp/native-lib.cpp)
+        src/main/cpp/native-lib.cpp
+        src/main/cpp/thread/IObserver.cpp
+        src/main/cpp/thread/XThread.cpp
+        src/main/cpp/XData.cpp
+        src/main/cpp/XParameter.cpp
+        src/main/cpp/demux/IDemux.cpp
+        src/main/cpp/demux/FFDemux.cpp
+        src/main/cpp/decode/IDecode.cpp
+        )
 
 # 添加库——外部引入的库
 # 库名称：avcodec（不需要包含前缀lib）
