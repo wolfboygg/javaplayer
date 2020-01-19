@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.ggwolf.ffmpeglibrary.FFmpegActivity;
+import com.ggwolf.ffmpeglibrary.demo.CDemoActivity;
 
 public class SplashActivity extends AppCompatActivity {
 
@@ -31,6 +32,9 @@ public class SplashActivity extends AppCompatActivity {
         switch (view.getId()) {
             case R.id.ffmpeg_btn:
                 startActivity(new Intent(this, FFmpegActivity.class));
+                break;
+            case R.id.c_thread:
+                startActivity(new Intent(this, CDemoActivity.class));
                 break;
         }
     }

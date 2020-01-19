@@ -2,9 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ggwolf.ffmpeglibrary">
 
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
     <application>
-        <activity android:name=".FFmpegActivity"></activity>
+        <activity android:name=".demo.CDemoActivity"></activity>
+        <activity android:name=".FFmpegActivity" />
     </application>
 
 </manifest>

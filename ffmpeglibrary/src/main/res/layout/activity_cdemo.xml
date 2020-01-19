@@ -1,25 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".SplashActivity">
+    tools:context=".demo.CDemoActivity">
 
     <Button
-        android:id="@+id/ffmpeg_btn"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:text="FFMPEG"
-        android:onClick="onClick"
-        />
-    <Button
-        android:id="@+id/c_thread"
+        android:id="@+id/test_c_thread"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:text="C_Thread"
-        android:onClick="onClick"
         />
+
+    <Button
+        android:id="@+id/producter_customer"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="producter_customer"/>
+
+    <Button
+        android:id="@+id/c_call_java"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="c_call_java"/>
 
 </LinearLayout>

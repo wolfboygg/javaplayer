@@ -8,6 +8,11 @@
 #include <SLES/OpenSLES.h>
 #include <SLES/OpenSLES_Android.h>
 #include <__locale>
+#include "pthread.h"
+#include "queue"
+#include "listener/JavaListener.h"
+
+using namespace std;
 
 extern "C" {
 #include <libavfilter/avfilter.h>
@@ -387,20 +392,6 @@ Java_com_ggwolf_ffmpeglibrary_MediaHelper_openVideo(JNIEnv *env, jobject thiz, j
 
 
 
-extern "C"
-JNIEXPORT
-jint JNI_OnLoad(JavaVM *vm, void *res) {
-    av_jni_set_java_vm(vm, 0);
-    return JNI_VERSION_1_4;
-}
-
-
-extern "C"
-JNIEXPORT
-void JNI_OnUnload(JavaVM *vm, void *reserved) {
-
-}
-
 
 static SLObjectItf engineSL = NULL;
 
@@ -531,5 +522,124 @@ Java_com_ggwolf_ffmpeglibrary_MediaHelper_playPcm(JNIEnv *env, jobject thiz) {
 
     // 启动队列回调
     (*pcmQue)->Enqueue(pcmQue, "", 1);
+
+}
+
+
+pthread_t pthread;
+
+void *normalThreadCallback(void *data) {
+    LOGD("normalThreadCallback execute......")
+    pthread_exit(&pthread);
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_ggwolf_ffmpeglibrary_MediaHelper_normalThread(JNIEnv *env, jobject thiz) {
+    /**
+     * pthread 来创建线程，一定要记得要进行处理 要在自线程执行的函数中进行退出操作
+     */
+    // 最后一个参数是要传递的参数
+    pthread_create(&pthread, NULL, normalThreadCallback, NULL);
+
+}
+
+
+/**
+ * 生产者 消费者 消费者发现产品为空的时候要进行等待
+ * 需要创建互斥量 条件变量来实现线程同步通信 等等
+ */
+pthread_t productor;
+pthread_t custom;
+
+pthread_mutex_t slef_mutex;
+pthread_cond_t slef_cond;
+
+std::queue<int> myQueue;
+
+void *productorCallback(void *) {
+    while (1) {
+        pthread_mutex_lock(&slef_mutex);
+        myQueue.push(1);
+        LOGD("生产者生产一个产品，通知消费者消费，产品数量为%d", myQueue.size());
+        pthread_cond_signal(&slef_cond);
+        pthread_mutex_unlock(&slef_mutex);
+        sleep(5);
+    }
+}
+
+void *customCallback(void *) {
+    while (1) {
+        pthread_mutex_lock(&slef_mutex);
+        if (myQueue.size() > 0) {
+            myQueue.pop();
+            LOGD("消费者消费产品，产品数量还剩余%d", myQueue.size());
+        } else {
+            // 等待
+            LOGD("没有产品可以消费，等待中");
+            // 这里锁会解开
+            pthread_cond_wait(&slef_cond, &slef_mutex);
+        }
+        pthread_mutex_unlock(&slef_mutex);
+        usleep(1000 * 500);
+
+    }
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_ggwolf_ffmpeglibrary_MediaHelper_mutexThread(JNIEnv *env, jobject thiz) {
+
+    pthread_mutex_init(&slef_mutex, NULL);
+    pthread_cond_init(&slef_cond, NULL);
+
+    pthread_create(&productor, NULL, productorCallback, NULL);
+    pthread_create(&custom, NULL, customCallback, NULL);
+
+    for (int i = 0; i < 10; ++i) {
+        myQueue.push(i);
+    }
+
+}
+
+
+JavaVM *javaVm;
+JavaListener *listener;
+
+pthread_t thread_call_java;
+
+void* call_java_callback(void *data) {
+    JavaListener *javaListener = (JavaListener *)(data);
+    javaListener->OnError(0, 1001, "call java method at child thread");
+    pthread_exit(&thread_call_java);
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_ggwolf_ffmpeglibrary_MediaHelper_cCallJavaMethod(JNIEnv *env, jobject thiz) {
+    // 进行调用
+    listener = new JavaListener(javaVm, env, env->NewGlobalRef(thiz));
+//    listener->OnError(1, 100, "execute method at main thread");
+    // 使用自线程进行调用
+    pthread_create(&thread_call_java, NULL,call_java_callback , listener);
+}
+
+
+extern "C"
+JNIEXPORT
+jint JNI_OnLoad(JavaVM *vm, void *res) {
+    JNIEnv *env;
+    javaVm = vm;
+    av_jni_set_java_vm(vm, 0);
+    if (vm->GetEnv((void **)(&env), JNI_VERSION_1_4) != JNI_OK) {
+        return -1;
+    }
+    return JNI_VERSION_1_4;
+}
+
+
+extern "C"
+JNIEXPORT
+void JNI_OnUnload(JavaVM *vm, void *reserved) {
 
 }

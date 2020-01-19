@@ -57,4 +57,41 @@ public class MediaHelper {
 
     public native void playPcm();
 
+    /**
+     * Test C++ Thread
+     */
+    public native void normalThread();
+
+    /**
+     * 实现一个生产者消费者模型
+     */
+    public native void mutexThread();
+
+    public native void cCallJavaMethod();
+
+    /**
+     * 我们在c++ 层封装好对自线程和主线程的调用方式，然后进行切换线程即可调用
+     * 其实主要的区别就是JNIEnv的对象问题是与线程绑定的
+     * @param code
+     * @param msg
+     */
+    public void onError(int code, String msg) {
+        if (mListenner != null) {
+            mListenner.onError(code, msg);
+        }
+    }
+
+    public OnErrorListener mListenner;
+
+    public void setmListenner(OnErrorListener mListenner) {
+        this.mListenner = mListenner;
+    }
+
+    public interface OnErrorListener {
+        void onError(int code, String msg);
+    }
+
+
+
+
 }

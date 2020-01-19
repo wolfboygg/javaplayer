@@ -22,6 +22,7 @@ add_library( myffmpeg
         src/main/cpp/demux/IDemux.cpp
         src/main/cpp/demux/FFDemux.cpp
         src/main/cpp/decode/IDecode.cpp
+        src/main/cpp/listener/JavaListener.cpp
         )
 
 # 添加库——外部引入的库
