@@ -29,7 +29,8 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     implementation project(path: ':filterlibrary')
     implementation project(path: ':cameralibrary')
-    implementation project(path: ':ffmpeglibrary')
+//    implementation project(path: ':ffmpeglibrary')
+    implementation project(path: ':audioplayer')
     implementation 'ywl.ywl5320:libmusic:1.2.0'
     implementation 'com.google.android.exoplayer:exoplayer-core:2.10.5'
     implementation 'com.google.android.exoplayer:exoplayer-ui:2.10.5'

@@ -25,4 +25,10 @@
         android:layout_height="50dp"
         android:text="c_call_java"/>
 
+    <Button
+        android:id="@+id/audio_player"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="AUDIO_PLAYER"/>
+
 </LinearLayout>

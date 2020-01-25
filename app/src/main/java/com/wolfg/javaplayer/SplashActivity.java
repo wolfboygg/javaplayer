@@ -9,8 +9,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
-import com.ggwolf.ffmpeglibrary.FFmpegActivity;
-import com.ggwolf.ffmpeglibrary.demo.CDemoActivity;
+import com.ggwolf.audioplayer.AudioPlayerActivity;
+
 
 public class SplashActivity extends AppCompatActivity {
 
@@ -31,11 +31,13 @@ public class SplashActivity extends AppCompatActivity {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.ffmpeg_btn:
-                startActivity(new Intent(this, FFmpegActivity.class));
+//                startActivity(new Intent(this, FFmpegActivity.class));
                 break;
             case R.id.c_thread:
-                startActivity(new Intent(this, CDemoActivity.class));
+//                startActivity(new Intent(this, CDemoActivity.class));
                 break;
+            case R.id.audio_player:
+                startActivity(new Intent(this, AudioPlayerActivity.class));
         }
     }
 }

@@ -21,5 +21,12 @@
         android:text="C_Thread"
         android:onClick="onClick"
         />
+    <Button
+        android:id="@+id/audio_player"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="AUDIO_PLAYER"
+        android:onClick="onClick"
+        />
 
 </LinearLayout>
