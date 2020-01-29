@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.ggwolf.audioplayer.AudioPlayerActivity;
+import com.wolfg.javaplayer.view.CustomerActivity;
 
 
 public class SplashActivity extends AppCompatActivity {
@@ -38,6 +39,10 @@ public class SplashActivity extends AppCompatActivity {
                 break;
             case R.id.audio_player:
                 startActivity(new Intent(this, AudioPlayerActivity.class));
+                break;
+            case R.id.customer_view:
+                startActivity(new Intent(this, CustomerActivity.class));
+                break;
         }
     }
 }

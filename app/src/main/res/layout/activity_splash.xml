@@ -29,4 +29,11 @@
         android:onClick="onClick"
         />
 
+    <Button
+        android:id="@+id/customer_view"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="CustomerView"
+        android:onClick="onClick"/>
+
 </LinearLayout>
