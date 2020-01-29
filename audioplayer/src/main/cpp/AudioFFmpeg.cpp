@@ -52,7 +52,8 @@ void AudioFFmpeg::decodeFFmpegThread() {
         if (avFormatContext->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_AUDIO) {// 表示找到了音频流
             if (audioPlayer == NULL) {
                 audioPlayer = new AudioPlayer(audioPlayerStatus,
-                                              avFormatContext->streams[i]->codecpar->sample_rate);
+                                              avFormatContext->streams[i]->codecpar->sample_rate,
+                                              this->audioCallJava);
                 audioPlayer->streamIndex = i;
                 audioPlayer->codecpar = avFormatContext->streams[i]->codecpar;
             }
@@ -150,6 +151,18 @@ void AudioFFmpeg::start() {
 
 AudioFFmpeg::~AudioFFmpeg() {
 
+}
+
+void AudioFFmpeg::pause() {
+    if (audioPlayer != NULL) {
+        audioPlayer->pause();
+    }
+}
+
+void AudioFFmpeg::resume() {
+    if (audioPlayer != NULL) {
+        audioPlayer->resume();
+    }
 }
 
 

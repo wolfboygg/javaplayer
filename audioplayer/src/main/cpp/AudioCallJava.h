@@ -21,11 +21,14 @@ public:
     jobject jobj;
 
     jmethodID jmethodId;
+    jmethodID jmethodIdOnLoad;
 
     AudioCallJava(JavaVM *vm, JNIEnv *env, jobject *obj);
     ~AudioCallJava();
 
     void onCallPrepared(int type);
+
+    void onCallOnLoad(int type, bool load);
 
 
 

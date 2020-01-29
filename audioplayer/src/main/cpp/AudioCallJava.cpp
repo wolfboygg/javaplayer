@@ -19,6 +19,11 @@ AudioCallJava::AudioCallJava(JavaVM *vm, JNIEnv *env, jobject *obj) {
         return;
     }
     jmethodId = env->GetMethodID(clz, "onCallPrepared", "()V");
+    /**
+     * 调用准备状态的方法id
+     * 注意java中方法的签名中boolean是Z
+     */
+    jmethodIdOnLoad = env->GetMethodID(clz, "onCallLoad", "(Z)V");
 
 }
 
@@ -53,4 +58,27 @@ void AudioCallJava::onCallPrepared(int type) {
 
     }
 
+}
+
+void AudioCallJava::onCallOnLoad(int type, bool load) {
+    if (type == MAIN_THREAD) {
+
+        // 直接进行调用
+        this->env->CallVoidMethod(this->jobj, jmethodIdOnLoad, load);
+
+    } else if (type == CHILD_THREAD) {
+
+        // 需要从自线程中绑定获取JNIEnv对象
+        JNIEnv *jniEnv = NULL;
+        if (this->vm->AttachCurrentThread(&jniEnv, 0) != JNI_OK) {
+            if (LOG_DEBUG) {
+                LOGD("get child thread jnienv wrong");
+            }
+            return;
+        }
+        //然后进行调用
+        jniEnv->CallVoidMethod(this->jobj, jmethodIdOnLoad, load);
+        this->vm->DetachCurrentThread();
+
+    }
 }

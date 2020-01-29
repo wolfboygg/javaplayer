@@ -4,9 +4,10 @@
 
 #include "AudioPlayer.h"
 
-AudioPlayer::AudioPlayer(AudioPlayerStatus *audioPlayerStatus, int sample_rate) {
+AudioPlayer::AudioPlayer(AudioPlayerStatus *audioPlayerStatus, int sample_rate, AudioCallJava *audioCallJava) {
     this->audioPlayerStatus = audioPlayerStatus;
     this->sample_rate = sample_rate;
+    this->audioCallJava = audioCallJava;
     this->quene = new PlayerQuene(this->audioPlayerStatus);
     buffer = (uint8_t *) av_malloc(sample_rate * 2 * 2);
 }
@@ -29,6 +30,19 @@ void AudioPlayer::play() {
 int AudioPlayer::resampleAudio() {
 
     while (audioPlayerStatus != NULL && !audioPlayerStatus->exit) {
+        // 在解码中进行处理
+        if (this->quene->getQueueSize() == 0) {// 加载中
+            if (!this->load) {
+                this->load = true;
+                audioCallJava->onCallOnLoad(CHILD_THREAD, true);
+            }
+            continue;
+        } else {
+            if (this->load) {
+                this->load = false;
+                audioCallJava->onCallOnLoad(CHILD_THREAD, false);
+            }
+        }
         // 开始解码
         avPacket = av_packet_alloc();
         if (quene->getAvpacket(avPacket) != 0) {
@@ -243,6 +257,18 @@ unsigned int AudioPlayer::getCurrentSampleRateForOpensles(int sample_rate) {
             rate = SL_SAMPLINGRATE_44_1;
     }
     return rate;
+}
+
+void AudioPlayer::pause() {
+    if (pcmPlayerPlay != NULL) {
+        (*pcmPlayerPlay)->SetPlayState(pcmPlayerPlay, SL_PLAYSTATE_PAUSED);
+    }
+}
+
+void AudioPlayer::resume() {
+    if (pcmPlayerPlay != NULL) {
+        (*pcmPlayerPlay)->SetPlayState(pcmPlayerPlay, SL_PLAYSTATE_PLAYING);
+    }
 }
 
 
