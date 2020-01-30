@@ -56,6 +56,9 @@ void AudioFFmpeg::decodeFFmpegThread() {
                                               this->audioCallJava);
                 audioPlayer->streamIndex = i;
                 audioPlayer->codecpar = avFormatContext->streams[i]->codecpar;
+                // 获取当前播放文件的内容总的时间长度
+                audioPlayer->duration = avFormatContext->duration / AV_TIME_BASE;
+                audioPlayer->time_base = avFormatContext->streams[i]->time_base;
             }
         }
     }

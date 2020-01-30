@@ -8,6 +8,10 @@
  *  使用openSLES中的 pcmPlayerPlay 播放器的状态来进行实现
  *   (*pcmPlayerPlay)->SetPlayState(pcmPlayerPlay, SL_PLAYSTATE_PLAYING);
  *
+ * 3.添加播放时长的处理
+ *  总的播放时常可以通过AVFormatContext来进行获取
+ *  当前的播放时长要通过AVFrame的时间+播放多少内容的打时间
+ *
  */
 
 #ifndef JAVAPLAYER_AUDIOPLAYER_H
@@ -42,8 +46,13 @@ public:
     int sample_rate = 0;
 
     AudioCallJava *audioCallJava;
-
     bool load = true;// 默认的是在加载状态
+
+    int duration = 0;
+    AVRational time_base; // 这个是和流相关的，我们需要在获取到当前流的时候就应该对它赋值
+    double clock; // 总的播放时间长度
+    double now_time; // 当前frame的时间
+    double last_time; // 主要用来控制回调java层的频率
 
 
     // 引擎接口

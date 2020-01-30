@@ -22,6 +22,7 @@ public:
 
     jmethodID jmethodId;
     jmethodID jmethodIdOnLoad;
+    jmethodID jmethodIdOnTimeInfo;
 
     AudioCallJava(JavaVM *vm, JNIEnv *env, jobject *obj);
     ~AudioCallJava();
@@ -29,6 +30,8 @@ public:
     void onCallPrepared(int type);
 
     void onCallOnLoad(int type, bool load);
+
+    void onCallTimeInfo(int type, int currentTime, int totalTime);
 
 
 

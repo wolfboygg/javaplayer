@@ -4,14 +4,18 @@ import android.text.TextUtils;
 
 import com.ggwolf.audioplayer.listener.OnLoadListener;
 import com.ggwolf.audioplayer.listener.OnPauseResumeListener;
+import com.ggwolf.audioplayer.listener.OnTimeInfoListener;
 import com.ggwolf.audioplayer.utils.LogHelper;
 
 public class AudioPlayer {
     private static final String TAG = "AudioPlayer";
 
+    private AudioTimeInfoBean audioTimeInfoBean;
+
     private OnPreparedListener listener;
     private OnLoadListener onLoadListener;
     private OnPauseResumeListener onPauseResumeListener;
+    private OnTimeInfoListener onTimeInfoListener;
 
     /**
      * 播放资源的地址
@@ -112,6 +116,22 @@ public class AudioPlayer {
         }
     }
 
+    /**
+     * jni层来回调处理当前的时间信息
+     * @param currentTime
+     * @param totalTime
+     */
+    public void onCallTimeInfo(int currentTime, int totalTime) {
+        if (onTimeInfoListener != null) {
+            if (audioTimeInfoBean == null) {
+                audioTimeInfoBean = new AudioTimeInfoBean();
+            }
+            audioTimeInfoBean.setCurrentTime(currentTime);
+            audioTimeInfoBean.setTotalTime(totalTime);
+            onTimeInfoListener.onTimeInfo(audioTimeInfoBean);
+        }
+    }
+
 
     public void setListener(OnPreparedListener listener) {
         this.listener = listener;
@@ -127,6 +147,10 @@ public class AudioPlayer {
 
     public void setOnPauseResumeListener(OnPauseResumeListener onPauseResumeListener) {
         this.onPauseResumeListener = onPauseResumeListener;
+    }
+
+    public void setOnTimeInfoListener(OnTimeInfoListener onTimeInfoListener) {
+        this.onTimeInfoListener = onTimeInfoListener;
     }
 
     public interface OnPreparedListener {

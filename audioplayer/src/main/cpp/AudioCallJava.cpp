@@ -25,6 +25,11 @@ AudioCallJava::AudioCallJava(JavaVM *vm, JNIEnv *env, jobject *obj) {
      */
     jmethodIdOnLoad = env->GetMethodID(clz, "onCallLoad", "(Z)V");
 
+    /**
+     * jni层回调java层的方法
+     */
+    jmethodIdOnTimeInfo = env->GetMethodID(clz, "onCallTimeInfo", "(II)V");
+
 }
 
 AudioCallJava::~AudioCallJava() {
@@ -78,6 +83,30 @@ void AudioCallJava::onCallOnLoad(int type, bool load) {
         }
         //然后进行调用
         jniEnv->CallVoidMethod(this->jobj, jmethodIdOnLoad, load);
+        this->vm->DetachCurrentThread();
+
+    }
+}
+
+void AudioCallJava::onCallTimeInfo(int type, int currentTime, int totalTime) {
+    // 这里用来进行回调
+    if (type == MAIN_THREAD) {
+
+        // 直接进行调用
+        this->env->CallVoidMethod(this->jobj, jmethodIdOnTimeInfo, currentTime, totalTime);
+
+    } else if (type == CHILD_THREAD) {
+
+        // 需要从自线程中绑定获取JNIEnv对象
+        JNIEnv *jniEnv = NULL;
+        if (this->vm->AttachCurrentThread(&jniEnv, 0) != JNI_OK) {
+            if (LOG_DEBUG) {
+                LOGD("get child thread jnienv wrong");
+            }
+            return;
+        }
+        //然后进行调用
+        jniEnv->CallVoidMethod(this->jobj, jmethodIdOnTimeInfo, currentTime, totalTime);
         this->vm->DetachCurrentThread();
 
     }

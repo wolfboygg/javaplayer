@@ -4,7 +4,8 @@
 
 #include "AudioPlayer.h"
 
-AudioPlayer::AudioPlayer(AudioPlayerStatus *audioPlayerStatus, int sample_rate, AudioCallJava *audioCallJava) {
+AudioPlayer::AudioPlayer(AudioPlayerStatus *audioPlayerStatus, int sample_rate,
+                         AudioCallJava *audioCallJava) {
     this->audioPlayerStatus = audioPlayerStatus;
     this->sample_rate = sample_rate;
     this->audioCallJava = audioCallJava;
@@ -110,6 +111,14 @@ int AudioPlayer::resampleAudio() {
             int out_channels = av_get_channel_layout_nb_channels(AV_CH_LAYOUT_STEREO);
             data_size = nb * out_channels * av_get_bytes_per_sample(AV_SAMPLE_FMT_S16);
 
+            /**
+             * 这里可以进行求当前播放Frame的时间长度
+             */
+            now_time = avFrame->pts * av_q2d(time_base);
+            if (now_time < clock) {
+                now_time = clock;
+            }
+            clock = now_time;
 
             if (LOG_DEBUG) {
                 LOGD("data_size is %d", data_size);
@@ -144,6 +153,13 @@ void pcmBufferCallBack(SLAndroidSimpleBufferQueueItf bf, void *context) {
     if (wlAudio != NULL) {
         int buffersize = wlAudio->resampleAudio();
         if (buffersize > 0) {
+            // 这里进行处理 加上当前的播放时间
+            wlAudio->clock += buffersize / ((double) (wlAudio->sample_rate * 2 * 2));
+            // 然后控制当前的回调java层的速率
+            if (wlAudio->clock - wlAudio->last_time >= 0.1) { // 0.1s回调一次
+                wlAudio->last_time = wlAudio->clock;
+                wlAudio->audioCallJava->onCallTimeInfo(CHILD_THREAD, wlAudio->clock, wlAudio->duration);
+            }
             (*wlAudio->pcmBufferQueue)->Enqueue(wlAudio->pcmBufferQueue, (char *) wlAudio->buffer,
                                                 buffersize);
         }
