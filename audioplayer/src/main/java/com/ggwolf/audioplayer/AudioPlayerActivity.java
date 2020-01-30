@@ -26,7 +26,7 @@ public class AudioPlayerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_audio_player);
         mTimeInfo = findViewById(R.id.time_info);
-        AudioPlayer.getInstance().setSource(Environment.getExternalStorageDirectory().getAbsolutePath() + "/out.mp3");
+        AudioPlayer.getInstance().setSource(Environment.getExternalStorageDirectory().getAbsolutePath() + "/out1.mp3");
         AudioPlayer.getInstance().setListener(() -> {
             LogHelper.i(TAG, "audio prepared on sucesss");
             AudioPlayer.getInstance().start();
@@ -52,6 +52,10 @@ public class AudioPlayerActivity extends AppCompatActivity {
                 mTimeInfo.setText(TimeUtils.secdsToDateFormat(timeInfo.getCurrentTime(), timeInfo.getTotalTime()) + "/"
                  + TimeUtils.secdsToDateFormat(timeInfo.getTotalTime(), timeInfo.getTotalTime()));
             });
+        });
+
+        AudioPlayer.getInstance().setOnErrorListener((code, msg) -> {
+            LogHelper.i(TAG, "code :" + code + "-->msg:" + msg);
         });
     }
 

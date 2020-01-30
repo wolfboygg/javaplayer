@@ -17,6 +17,8 @@ AudioCallJava *audioCallJava;
 AudioFFmpeg *audioFFmpeg;
 AudioPlayerStatus *audioPlayerStatus;
 
+bool native_exit = true;
+
 
 extern "C"
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
@@ -38,6 +40,8 @@ Java_com_ggwolf_audioplayer_AudioPlayer_n_1prepared(JNIEnv *env, jobject thiz, j
         if (audioCallJava == NULL) {
             audioCallJava = new AudioCallJava(javaVM, env, &thiz);
         }
+        // 加载状态调用
+        audioCallJava->onCallOnLoad(MAIN_THREAD, true);
         audioPlayerStatus = new AudioPlayerStatus();
         audioFFmpeg = new AudioFFmpeg(audioPlayerStatus, audioCallJava, url);
         audioFFmpeg->prepared();
@@ -77,6 +81,10 @@ extern "C"
 JNIEXPORT void JNICALL
 Java_com_ggwolf_audioplayer_AudioPlayer_n_1stop(JNIEnv *env, jobject thiz) {
     // 释放
+    if (!native_exit) {
+        return;
+    }
+    native_exit = false;
     if (audioFFmpeg != NULL) {
         audioFFmpeg->release();
         delete (audioFFmpeg);
@@ -92,6 +100,6 @@ Java_com_ggwolf_audioplayer_AudioPlayer_n_1stop(JNIEnv *env, jobject thiz) {
             audioCallJava = NULL;
         }
     }
-
+    native_exit = true;
 
 }

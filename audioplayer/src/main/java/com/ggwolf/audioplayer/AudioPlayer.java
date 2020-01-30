@@ -2,6 +2,7 @@ package com.ggwolf.audioplayer;
 
 import android.text.TextUtils;
 
+import com.ggwolf.audioplayer.listener.OnErrorListener;
 import com.ggwolf.audioplayer.listener.OnLoadListener;
 import com.ggwolf.audioplayer.listener.OnPauseResumeListener;
 import com.ggwolf.audioplayer.listener.OnTimeInfoListener;
@@ -16,6 +17,7 @@ public class AudioPlayer {
     private OnLoadListener onLoadListener;
     private OnPauseResumeListener onPauseResumeListener;
     private OnTimeInfoListener onTimeInfoListener;
+    private OnErrorListener onErrorListener;
 
     /**
      * 播放资源的地址
@@ -52,8 +54,6 @@ public class AudioPlayer {
             LogHelper.i(TAG, "播放资源地址没有设置");
             return;
         }
-        // 这里开始就是加载状态
-        onCallLoad(true);
         new Thread(() -> {
             n_prepared(mSource);
         }).start();
@@ -139,6 +139,19 @@ public class AudioPlayer {
         }
     }
 
+    /**
+     * 将c++层的错误信息调用返回到应用层
+     * @param code
+     * @param msg
+     */
+    public void onCallErrorInfo(int code, String msg) {
+        LogHelper.i("guo","code,....msg" + code);
+        stop();// 开一个自线程在释放资源
+        if (onErrorListener != null) {
+            onErrorListener.onError(code, msg);
+        }
+    }
+
 
     public void setListener(OnPreparedListener listener) {
         this.listener = listener;
@@ -158,6 +171,10 @@ public class AudioPlayer {
 
     public void setOnTimeInfoListener(OnTimeInfoListener onTimeInfoListener) {
         this.onTimeInfoListener = onTimeInfoListener;
+    }
+
+    public void setOnErrorListener(OnErrorListener onErrorListener) {
+        this.onErrorListener = onErrorListener;
     }
 
     public interface OnPreparedListener {

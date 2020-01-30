@@ -60,6 +60,7 @@ void AudioFFmpeg::decodeFFmpegThread() {
         if (LOG_DEBUG) {
             LOGD("can not open url %s", url);
         }
+        audioCallJava->onCallErrorInfo(CHILD_THREAD, 10001, "can not open url");
         // 在所有要返回的时候要解锁
         exit = true;
         pthread_mutex_unlock(&init_mutex);
@@ -70,6 +71,7 @@ void AudioFFmpeg::decodeFFmpegThread() {
         if (LOG_DEBUG) {
             LOGD("can not find stream info");
         }
+        audioCallJava->onCallErrorInfo(CHILD_THREAD, 10002, "can not find stream info");
         exit = true;
         pthread_mutex_unlock(&init_mutex);
         return;
@@ -94,6 +96,7 @@ void AudioFFmpeg::decodeFFmpegThread() {
         if (LOG_DEBUG) {
             LOGD("audio player is null");
         }
+        audioCallJava->onCallErrorInfo(CHILD_THREAD, 10003, "audio player is null");
         exit = true;
         pthread_mutex_unlock(&init_mutex);
         return;
@@ -105,6 +108,7 @@ void AudioFFmpeg::decodeFFmpegThread() {
         if (LOG_DEBUG) {
             LOGD("can not find decoder");
         }
+        audioCallJava->onCallErrorInfo(CHILD_THREAD, 10004, "can not find decoder");
         exit = true;
         pthread_mutex_unlock(&init_mutex);
         return;
@@ -115,6 +119,7 @@ void AudioFFmpeg::decodeFFmpegThread() {
         if (LOG_DEBUG) {
             LOGD("can not alloc new decodecctx");
         }
+        audioCallJava->onCallErrorInfo(CHILD_THREAD, 10005, "can not alloc new decodecctx");
         exit = true;
         pthread_mutex_unlock(&init_mutex);
         return;
@@ -124,6 +129,7 @@ void AudioFFmpeg::decodeFFmpegThread() {
         if (LOG_DEBUG) {
             LOGD("can not fill decodecctx");
         }
+        audioCallJava->onCallErrorInfo(CHILD_THREAD, 10006, "can not fill decodecctx");
         exit = true;
         pthread_mutex_unlock(&init_mutex);
         return;
@@ -134,6 +140,7 @@ void AudioFFmpeg::decodeFFmpegThread() {
         if (LOG_DEBUG) {
             LOGD("can not open audio streams");
         }
+        audioCallJava->onCallErrorInfo(CHILD_THREAD, 10007, "can not open audio streams");
         exit = true;
         pthread_mutex_unlock(&init_mutex);
         return;
