@@ -72,3 +72,26 @@ Java_com_ggwolf_audioplayer_AudioPlayer_n_1resume(JNIEnv *env, jobject thiz) {
         audioFFmpeg->resume();
     }
 }
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_ggwolf_audioplayer_AudioPlayer_n_1stop(JNIEnv *env, jobject thiz) {
+    // 释放
+    if (audioFFmpeg != NULL) {
+        audioFFmpeg->release();
+        delete (audioFFmpeg);
+        audioFFmpeg = NULL;
+
+        if (audioPlayerStatus != NULL) {
+            delete (audioPlayerStatus);
+            audioPlayerStatus = NULL;
+        }
+
+        if (audioCallJava != NULL) {
+            delete (audioCallJava);
+            audioCallJava = NULL;
+        }
+    }
+
+
+}

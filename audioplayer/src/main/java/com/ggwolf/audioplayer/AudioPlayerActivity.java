@@ -63,6 +63,8 @@ public class AudioPlayerActivity extends AppCompatActivity {
             AudioPlayer.getInstance().pause();
         } else if (id == R.id.audio_resume) {
             AudioPlayer.getInstance().resume();
+        } else if (id == R.id.audio_stop) {
+            AudioPlayer.getInstance().stop();
         }
     }
 }

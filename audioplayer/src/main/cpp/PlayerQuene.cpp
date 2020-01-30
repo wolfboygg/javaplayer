@@ -12,6 +12,8 @@ PlayerQuene::PlayerQuene(AudioPlayerStatus *audioPlayerStatus) {
 }
 
 PlayerQuene::~PlayerQuene() {
+    // 先释放了队列，然后在销毁线程锁
+    clearAVPacket();
     pthread_mutex_destroy(&mutexPacket);
     pthread_cond_destroy(&condPacket);
 
@@ -62,4 +64,25 @@ int PlayerQuene::getQueueSize() {
     size = queuePacket.size();
     pthread_mutex_unlock(&mutexPacket);
     return size;
+}
+
+void PlayerQuene::clearAVPacket() {
+    // 进行清空队列操作 队列操作先要将线程等待结束然后才能释放
+    pthread_cond_signal(&condPacket);
+    // 然后要进行加锁操作才能进行释放
+    pthread_mutex_lock(&mutexPacket);
+
+    // 使用while循环进行释放
+    while (!queuePacket.empty()) {
+        if (LOG_DEBUG) {
+            LOGD("queue packet clear")
+        }
+        AVPacket *packet = queuePacket.front();
+        queuePacket.pop();
+        av_packet_free(&packet);
+        av_free(packet);
+        packet = NULL;
+    }
+
+    pthread_mutex_unlock(&mutexPacket);
 }

@@ -287,6 +287,60 @@ void AudioPlayer::resume() {
     }
 }
 
+void AudioPlayer::stop() {
+    if (pcmPlayerPlay != NULL) {
+        (*pcmPlayerPlay)->SetPlayState(pcmPlayerPlay, SL_PLAYSTATE_STOPPED);
+    }
+}
+
+void AudioPlayer::release() {
+
+    stop();
+
+    // 释放存储的列表
+    if (quene != NULL) {
+        delete(quene);// 这个方法调用会执行这个类的析构函数，然后进行释放队列
+        quene = NULL;
+    }
+    // 释放播放器
+    if (pcmPlayerObject != NULL) {
+        (*pcmPlayerObject)->Destroy(pcmPlayerObject);
+        pcmPlayerObject = NULL;
+        pcmPlayerPlay = NULL;
+        pcmBufferQueue = NULL;
+    }
+    // 释放混音器
+    if (outputMixObject != NULL) {
+        (*outputMixObject)->Destroy(outputMixObject);
+        outputMixObject = NULL;
+        outputMixEnvironmentalReverbItf = NULL;
+    }
+    // 释放引擎
+    if (engineObject != NULL) {
+        (*engineObject) ->Destroy(engineObject);
+        engineEngine = NULL;
+    }
+    // 释放播放数据buffer
+    if (buffer != NULL) {
+        delete(buffer);
+        buffer = NULL;
+    }
+    // 释放解码器上下文
+    if (avCodecContext !=NULL) {
+        avcodec_close(avCodecContext);
+        avcodec_free_context(&avCodecContext);
+        avCodecContext = NULL;
+    }
+    // 将状态和回调的指针置空
+    if (audioPlayerStatus != NULL) {
+        audioPlayerStatus = NULL;
+    }
+    if (audioCallJava != NULL) {
+        audioCallJava = NULL;
+    }
+
+}
+
 
 
 

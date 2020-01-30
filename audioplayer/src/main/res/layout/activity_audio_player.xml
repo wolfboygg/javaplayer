@@ -15,6 +15,13 @@
         android:onClick="onClick"/>
 
     <Button
+        android:id="@+id/audio_stop"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="停止"
+        android:onClick="onClick"/>
+
+    <Button
         android:id="@+id/audio_pause"
         android:layout_width="match_parent"
         android:layout_height="50dp"

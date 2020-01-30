@@ -14,6 +14,7 @@
 
 extern "C" {
 #include <libavformat/avformat.h>
+#include <libavutil/time.h>
 };
 
 class AudioFFmpeg {
@@ -24,6 +25,9 @@ public:
     pthread_t decodeThread = NULL;
     AVFormatContext *avFormatContext = NULL;
     AudioPlayerStatus *audioPlayerStatus = NULL;
+
+    pthread_mutex_t init_mutex;
+    bool exit = false;
 
 public:
     AudioFFmpeg(AudioPlayerStatus *audioPlayerStatus, AudioCallJava *audioCallJava,
@@ -41,6 +45,8 @@ public:
     void pause();
 
     void resume();
+
+    void release();
 
 };
 

@@ -12,6 +12,14 @@
  *  总的播放时常可以通过AVFormatContext来进行获取
  *  当前的播放时长要通过AVFrame的时间+播放多少内容的打时间
  *
+ *  4.释放内存 在停止播放的时需要进行处理
+ *     1.释放我们创建的queue
+ *     2.释放openSL
+ *     3.释放Audio
+ *     4.释放FFMpeg
+ *
+ *     释放内存的时候要先释放然后在delete然后在置空
+ *
  */
 
 #ifndef JAVAPLAYER_AUDIOPLAYER_H
@@ -88,6 +96,16 @@ public:
     void initOpenSLES();
 
     unsigned int getCurrentSampleRateForOpensles(int sample_rate);
+
+    /**
+     * 这个方法是让播放时器停止播放
+     */
+    void stop();
+
+    /**
+     * 这个方法用来释放我们需要释放内存
+     */
+    void release();
 
 };
 

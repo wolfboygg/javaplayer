@@ -84,6 +84,10 @@ public class AudioPlayer {
         }
     }
 
+    public void stop() {
+        new Thread(() -> n_stop()).start();
+    }
+
     /**
      * 打开解码器就完成
      */
@@ -96,6 +100,9 @@ public class AudioPlayer {
 
     // 播放
     private native void n_resume();
+
+    // 停止播放
+    private native void n_stop();
 
     /**
      * jni层需要调用这个方法通知准备好了
