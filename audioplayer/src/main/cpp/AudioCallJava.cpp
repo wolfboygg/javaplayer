@@ -35,6 +35,8 @@ AudioCallJava::AudioCallJava(JavaVM *vm, JNIEnv *env, jobject *obj) {
      */
     jmethodIdOnErrorInfo = env->GetMethodID(clz, "onCallErrorInfo", "(ILjava/lang/String;)V");
 
+    jmethodIdOnComplete = env->GetMethodID(clz, "onCallComplete", "()V");
+
 }
 
 AudioCallJava::~AudioCallJava() {
@@ -139,6 +141,30 @@ void AudioCallJava::onCallErrorInfo(int type, int code, char *msg) {
         jstring jmsg = jniEnv->NewStringUTF(msg);
         jniEnv->CallVoidMethod(this->jobj, jmethodIdOnErrorInfo, code, jmsg);
         jniEnv->DeleteLocalRef(jmsg);
+        this->vm->DetachCurrentThread();
+
+    }
+
+}
+
+void AudioCallJava::onCallComplete(int type) {
+    // 这里用来进行回调
+    if (type == MAIN_THREAD) {
+        // 直接进行调用
+        this->env->CallVoidMethod(this->jobj, jmethodIdOnComplete);
+
+    } else if (type == CHILD_THREAD) {
+
+        // 需要从自线程中绑定获取JNIEnv对象
+        JNIEnv *jniEnv = NULL;
+        if (this->vm->AttachCurrentThread(&jniEnv, 0) != JNI_OK) {
+            if (LOG_DEBUG) {
+                LOGD("get child thread jnienv wrong");
+            }
+            return;
+        }
+        //然后进行调用
+        jniEnv->CallVoidMethod(this->jobj, jmethodIdOnComplete);
         this->vm->DetachCurrentThread();
 
     }

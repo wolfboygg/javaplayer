@@ -33,14 +33,14 @@ int AudioPlayer::resampleAudio() {
     while (audioPlayerStatus != NULL && !audioPlayerStatus->exit) {
         // 在解码中进行处理
         if (this->quene->getQueueSize() == 0) {// 加载中
-            if (!this->load) {
-                this->load = true;
+            if (!audioPlayerStatus->load) {
+                audioPlayerStatus->load = true;
                 audioCallJava->onCallOnLoad(CHILD_THREAD, true);
             }
             continue;
         } else {
-            if (this->load) {
-                this->load = false;
+            if (audioPlayerStatus->load) {
+                audioPlayerStatus->load = false;
                 audioCallJava->onCallOnLoad(CHILD_THREAD, false);
             }
         }

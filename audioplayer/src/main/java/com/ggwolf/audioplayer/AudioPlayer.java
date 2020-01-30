@@ -2,6 +2,7 @@ package com.ggwolf.audioplayer;
 
 import android.text.TextUtils;
 
+import com.ggwolf.audioplayer.listener.OnCompleteListener;
 import com.ggwolf.audioplayer.listener.OnErrorListener;
 import com.ggwolf.audioplayer.listener.OnLoadListener;
 import com.ggwolf.audioplayer.listener.OnPauseResumeListener;
@@ -18,6 +19,7 @@ public class AudioPlayer {
     private OnPauseResumeListener onPauseResumeListener;
     private OnTimeInfoListener onTimeInfoListener;
     private OnErrorListener onErrorListener;
+    private OnCompleteListener onCompleteListener;
 
     /**
      * 播放资源的地址
@@ -88,6 +90,10 @@ public class AudioPlayer {
         new Thread(() -> n_stop()).start();
     }
 
+    public void seek(int secds) {
+        n_seek(secds);
+    }
+
     /**
      * 打开解码器就完成
      */
@@ -103,6 +109,8 @@ public class AudioPlayer {
 
     // 停止播放
     private native void n_stop();
+
+    private native void n_seek(int secds);
 
     /**
      * jni层需要调用这个方法通知准备好了
@@ -152,6 +160,16 @@ public class AudioPlayer {
         }
     }
 
+    /**
+     * 播放完成的回调
+     */
+    public void onCallComplete() {
+        stop();
+        if (onCompleteListener != null) {
+            onCompleteListener.onComplete();
+        }
+    }
+
 
     public void setListener(OnPreparedListener listener) {
         this.listener = listener;
@@ -175,6 +193,10 @@ public class AudioPlayer {
 
     public void setOnErrorListener(OnErrorListener onErrorListener) {
         this.onErrorListener = onErrorListener;
+    }
+
+    public void setOnCompleteListener(OnCompleteListener onCompleteListener) {
+        this.onCompleteListener = onCompleteListener;
     }
 
     public interface OnPreparedListener {

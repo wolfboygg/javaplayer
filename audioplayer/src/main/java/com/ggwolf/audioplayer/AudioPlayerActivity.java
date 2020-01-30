@@ -26,7 +26,7 @@ public class AudioPlayerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_audio_player);
         mTimeInfo = findViewById(R.id.time_info);
-        AudioPlayer.getInstance().setSource(Environment.getExternalStorageDirectory().getAbsolutePath() + "/out1.mp3");
+        AudioPlayer.getInstance().setSource(Environment.getExternalStorageDirectory().getAbsolutePath() + "/out.mp3");
         AudioPlayer.getInstance().setListener(() -> {
             LogHelper.i(TAG, "audio prepared on sucesss");
             AudioPlayer.getInstance().start();
@@ -47,7 +47,7 @@ public class AudioPlayerActivity extends AppCompatActivity {
         });
         AudioPlayer.getInstance().setOnTimeInfoListener(timeInfo -> {
             // 显示信息 这里是在自线程回调回来的，需要到主线程进行处理
-            LogHelper.i(TAG, "timeInfo.toString():" + timeInfo.toString());
+//            LogHelper.i(TAG, "timeInfo.toString():" + timeInfo.toString());
             runOnUiThread(() -> {
                 mTimeInfo.setText(TimeUtils.secdsToDateFormat(timeInfo.getCurrentTime(), timeInfo.getTotalTime()) + "/"
                  + TimeUtils.secdsToDateFormat(timeInfo.getTotalTime(), timeInfo.getTotalTime()));
@@ -56,6 +56,10 @@ public class AudioPlayerActivity extends AppCompatActivity {
 
         AudioPlayer.getInstance().setOnErrorListener((code, msg) -> {
             LogHelper.i(TAG, "code :" + code + "-->msg:" + msg);
+        });
+
+        AudioPlayer.getInstance().setOnCompleteListener(()-> {
+            LogHelper.i(TAG, "播放完成");
         });
     }
 
@@ -69,6 +73,8 @@ public class AudioPlayerActivity extends AppCompatActivity {
             AudioPlayer.getInstance().resume();
         } else if (id == R.id.audio_stop) {
             AudioPlayer.getInstance().stop();
+        } else if (id == R.id.audio_seek) {
+            AudioPlayer.getInstance().seek(300);
         }
     }
 }

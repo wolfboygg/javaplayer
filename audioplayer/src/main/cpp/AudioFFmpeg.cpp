@@ -10,6 +10,7 @@ AudioFFmpeg::AudioFFmpeg(AudioPlayerStatus *audioPlayerStatus, AudioCallJava *au
     this->audioCallJava = audioCallJava;
     this->url = url;
     pthread_mutex_init(&init_mutex, NULL);
+    pthread_mutex_init(&seek_mutex, NULL);
 }
 
 void *decodeFFmpeg(void *data) {
@@ -88,6 +89,7 @@ void AudioFFmpeg::decodeFFmpegThread() {
                 // 获取当前播放文件的内容总的时间长度
                 audioPlayer->duration = avFormatContext->duration / AV_TIME_BASE;
                 audioPlayer->time_base = avFormatContext->streams[i]->time_base;
+                this->duration = audioPlayer->duration;
             }
         }
     }
@@ -170,9 +172,23 @@ void AudioFFmpeg::start() {
 
     int count = 0;
     while (audioPlayerStatus != NULL && !audioPlayerStatus->exit) {
+
+        if (audioPlayerStatus->seek) {
+            continue;
+        }
+        // 判断要写到获取AVPacket前面
+        if (audioPlayer->quene->getQueueSize() > 40) {
+            continue;
+        }
         // 开始读取数据
         AVPacket *avPacket = av_packet_alloc();
-        if (av_read_frame(avFormatContext, avPacket) == 0) {
+
+        pthread_mutex_lock(&seek_mutex);
+        int ret = av_read_frame(avFormatContext, avPacket);
+        pthread_mutex_unlock(&seek_mutex);
+
+
+        if (ret == 0) {
             if (avPacket->stream_index == audioPlayer->streamIndex) {
                 //将读取出来的frame数据放到队列中
                 count++;
@@ -201,11 +217,19 @@ void AudioFFmpeg::start() {
             }
         }
     }
+
+    if (audioCallJava != NULL) {
+        audioCallJava->onCallComplete(CHILD_THREAD);
+    }
+
     exit = true;
+
+
 }
 
 AudioFFmpeg::~AudioFFmpeg() {
     pthread_mutex_destroy(&init_mutex);
+    pthread_mutex_destroy(&seek_mutex);
 }
 
 void AudioFFmpeg::pause() {
@@ -228,9 +252,9 @@ void AudioFFmpeg::release() {
     if (LOG_DEBUG) {
         LOGD("开始释放ffmepg")
     }
-    if (audioPlayerStatus->exit) { // 已经退出
-        return;
-    }
+//    if (audioPlayerStatus->exit) { // 已经退出
+//        return;
+//    }
     if (LOG_DEBUG) {
         LOGD("开始释放ffmepg2")
     }
@@ -277,6 +301,37 @@ void AudioFFmpeg::release() {
     }
 
     pthread_mutex_unlock(&init_mutex);
+
+}
+
+/**
+ * seek功能，我们主要是操作avFormatContext
+ */
+void AudioFFmpeg::seek(int64_t secds) {
+    if (duration <= 0) {
+        return;
+    }
+
+    if (secds >= 0 && secds <= duration) {
+        // 开始seek功能 如果audioPlayer为null没有seek的必要
+        if (audioPlayer != NULL) {
+            audioPlayerStatus->seek = true;
+
+            // 需要清空队列
+            audioPlayer->quene->clearAVPacket();
+            // 将所有的信息还原
+            audioPlayer->clock = 0;
+            audioPlayer->last_time = 0;
+
+            pthread_mutex_lock(&seek_mutex);
+            int64_t seek_secds = secds * AV_TIME_BASE;
+            avformat_seek_file(avFormatContext, -1, INT64_MIN, seek_secds, INT64_MAX, 0);
+
+            pthread_mutex_unlock(&seek_mutex);
+            audioPlayerStatus->seek = false;
+        }
+
+    }
 
 }
 

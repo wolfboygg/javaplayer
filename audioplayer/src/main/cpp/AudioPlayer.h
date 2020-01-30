@@ -54,7 +54,6 @@ public:
     int sample_rate = 0;
 
     AudioCallJava *audioCallJava;
-    bool load = true;// 默认的是在加载状态
 
     int duration = 0;
     AVRational time_base; // 这个是和流相关的，我们需要在获取到当前流的时候就应该对它赋值

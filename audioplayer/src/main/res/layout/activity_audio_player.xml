@@ -35,6 +35,14 @@
         android:text="继续播放"
         android:onClick="onClick"/>
 
+    <Button
+        android:id="@+id/audio_seek"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="Seek"
+        android:onClick="onClick"
+        />
+
 
     <TextView
         android:id="@+id/time_info"

@@ -19,6 +19,9 @@ AudioPlayerStatus *audioPlayerStatus;
 
 bool native_exit = true;
 
+// 开启自线程进行播放
+pthread_t start_thread;
+
 
 extern "C"
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
@@ -53,11 +56,17 @@ Java_com_ggwolf_audioplayer_AudioPlayer_n_1prepared(JNIEnv *env, jobject thiz, j
 
 }
 
+void *startThreadCallback(void *ctx) {
+    AudioFFmpeg *audioFFmpeg = (AudioFFmpeg *) (ctx);
+    audioFFmpeg->start();
+    pthread_exit(&start_thread);
+}
+
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_ggwolf_audioplayer_AudioPlayer_n_1start(JNIEnv *env, jobject thiz) {
     if (audioFFmpeg != NULL) {
-        audioFFmpeg->start();
+        pthread_create(&start_thread, NULL, startThreadCallback, audioFFmpeg);
     }
 }
 
@@ -102,4 +111,12 @@ Java_com_ggwolf_audioplayer_AudioPlayer_n_1stop(JNIEnv *env, jobject thiz) {
     }
     native_exit = true;
 
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_ggwolf_audioplayer_AudioPlayer_n_1seek(JNIEnv *env, jobject thiz, jint secds) {
+    if (audioFFmpeg != NULL) {
+        audioFFmpeg->seek(secds);
+    }
 }
