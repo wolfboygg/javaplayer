@@ -96,9 +96,8 @@ Java_com_ggwolf_audioplayer_AudioPlayer_n_1stop(JNIEnv *env, jobject thiz) {
     native_exit = false;
 
     // 调用java层
-    jclass  clz = env->GetObjectClass(thiz);
+    jclass clz = env->GetObjectClass(thiz);
     jmethodID jmid = env->GetMethodID(clz, "onCallStop", "()V");
-
 
 
     if (audioFFmpeg != NULL) {
@@ -128,4 +127,14 @@ Java_com_ggwolf_audioplayer_AudioPlayer_n_1seek(JNIEnv *env, jobject thiz, jint 
     if (audioFFmpeg != NULL) {
         audioFFmpeg->seek(secds);
     }
+}
+
+extern "C"
+JNIEXPORT jint JNICALL
+Java_com_ggwolf_audioplayer_AudioPlayer_n_1duration(JNIEnv *env, jobject thiz) {
+
+    if (audioFFmpeg != NULL) {
+        return audioFFmpeg->duration;
+    }
+    return 0;
 }

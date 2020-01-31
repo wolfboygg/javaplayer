@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.view.View;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.ggwolf.audioplayer.listener.OnLoadListener;
@@ -21,11 +22,38 @@ public class AudioPlayerActivity extends AppCompatActivity {
 
     private TextView mTimeInfo;
 
+    private SeekBar mSeekBar;
+
+    private int position;
+    private boolean isSeek = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_audio_player);
         mTimeInfo = findViewById(R.id.time_info);
+        mSeekBar = findViewById(R.id.seek_bar);
+        mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (AudioPlayer.getInstance().getDuration() > 0 && isSeek)  {
+                    position = progress * AudioPlayer.getInstance().getDuration() / 100;
+//                    AudioPlayer.getInstance().seek(position);
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                isSeek = true;
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                LogHelper.i("guo","11111111");
+                AudioPlayer.getInstance().seek(position);
+                isSeek = false;
+            }
+        });
         AudioPlayer.getInstance().setSource(Environment.getExternalStorageDirectory().getAbsolutePath() + "/out.mp3");
         AudioPlayer.getInstance().setListener(() -> {
             LogHelper.i(TAG, "audio prepared on sucesss");
@@ -38,7 +66,7 @@ public class AudioPlayerActivity extends AppCompatActivity {
                 LogHelper.i(TAG, "audio is playing.....");
             }
         });
-        AudioPlayer.getInstance().setOnPauseResumeListener(pause-> {
+        AudioPlayer.getInstance().setOnPauseResumeListener(pause -> {
             if (pause) {
                 LogHelper.i(TAG, "audio play state is pause");
             } else {
@@ -49,8 +77,14 @@ public class AudioPlayerActivity extends AppCompatActivity {
             // 显示信息 这里是在自线程回调回来的，需要到主线程进行处理
 //            LogHelper.i(TAG, "timeInfo.toString():" + timeInfo.toString());
             runOnUiThread(() -> {
-                mTimeInfo.setText(TimeUtils.secdsToDateFormat(timeInfo.getCurrentTime(), timeInfo.getTotalTime()) + "/"
-                 + TimeUtils.secdsToDateFormat(timeInfo.getTotalTime(), timeInfo.getTotalTime()));
+                if (!isSeek) {
+                    mTimeInfo.setText(TimeUtils.secdsToDateFormat(timeInfo.getCurrentTime(), timeInfo.getTotalTime()) + "/"
+                            + TimeUtils.secdsToDateFormat(timeInfo.getTotalTime(), timeInfo.getTotalTime()));
+
+                    // 设置到seekbar上
+                    mSeekBar.setProgress(timeInfo.getCurrentTime() * 100 / timeInfo.getTotalTime());
+                }
+
             });
         });
 
@@ -58,7 +92,7 @@ public class AudioPlayerActivity extends AppCompatActivity {
             LogHelper.i(TAG, "code :" + code + "-->msg:" + msg);
         });
 
-        AudioPlayer.getInstance().setOnCompleteListener(()-> {
+        AudioPlayer.getInstance().setOnCompleteListener(() -> {
             LogHelper.i(TAG, "播放完成");
         });
     }

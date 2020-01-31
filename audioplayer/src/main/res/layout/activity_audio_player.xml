@@ -7,40 +7,63 @@
     android:orientation="vertical"
     tools:context=".AudioPlayerActivity">
 
-    <Button
-        android:id="@+id/audio_start"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:onClick="onClick"
-        android:text="播放" />
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
-    <Button
-        android:id="@+id/audio_stop"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:onClick="onClick"
-        android:text="停止" />
 
-    <Button
-        android:id="@+id/audio_pause"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:onClick="onClick"
-        android:text="暂停" />
+        <Button
+            android:id="@+id/audio_start"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="50dp"
+            android:onClick="onClick"
+            android:text="播放" />
 
-    <Button
-        android:id="@+id/audio_resume"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:onClick="onClick"
-        android:text="继续播放" />
+        <Button
+            android:id="@+id/audio_stop"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="50dp"
+            android:onClick="onClick"
+            android:text="停止" />
 
-    <Button
-        android:id="@+id/audio_seek"
+        <Button
+            android:id="@+id/audio_pause"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="50dp"
+            android:onClick="onClick"
+            android:text="暂停" />
+
+        <Button
+            android:id="@+id/audio_resume"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="50dp"
+            android:onClick="onClick"
+            android:text="继续播放" />
+
+        <Button
+            android:id="@+id/audio_seek"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="50dp"
+            android:onClick="onClick"
+            android:text="Seek" />
+    </LinearLayout>
+
+
+    <SeekBar
+        android:id="@+id/seek_bar"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:onClick="onClick"
-        android:text="Seek" />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        />
+
+
 
     <Button
         android:id="@+id/audio_next"

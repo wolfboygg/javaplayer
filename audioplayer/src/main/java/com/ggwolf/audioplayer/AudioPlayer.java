@@ -14,6 +14,8 @@ public class AudioPlayer {
 
     private AudioTimeInfoBean audioTimeInfoBean;
 
+    private int duration = -1;
+
     private OnPreparedListener listener;
     private OnLoadListener onLoadListener;
     private OnPauseResumeListener onPauseResumeListener;
@@ -103,6 +105,13 @@ public class AudioPlayer {
         stop();
     }
 
+    public int getDuration() {
+        if (duration == -1) {
+            duration = n_duration();
+        }
+        return duration;
+    }
+
     /**
      * 打开解码器就完成
      */
@@ -120,6 +129,8 @@ public class AudioPlayer {
     private native void n_stop();
 
     private native void n_seek(int secds);
+
+    private native int n_duration();
 
     /**
      * jni层需要调用这个方法通知准备好了
