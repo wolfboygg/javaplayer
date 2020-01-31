@@ -26,6 +26,8 @@ public class AudioPlayer {
      */
     private String mSource;
 
+    private boolean isPlayNext = false;
+
     static {
         System.loadLibrary("audio");
     }
@@ -87,11 +89,18 @@ public class AudioPlayer {
     }
 
     public void stop() {
+        audioTimeInfoBean = null;
         new Thread(() -> n_stop()).start();
     }
 
     public void seek(int secds) {
         n_seek(secds);
+    }
+
+    public void playNext(String url) {
+        isPlayNext = true;
+        mSource = url;
+        stop();
     }
 
     /**
@@ -167,6 +176,14 @@ public class AudioPlayer {
         stop();
         if (onCompleteListener != null) {
             onCompleteListener.onComplete();
+        }
+    }
+
+    public void onCallStop() {
+        // 在这里判断是否播放下个url
+        if (isPlayNext) {
+            isPlayNext = false;
+            prepared();
         }
     }
 

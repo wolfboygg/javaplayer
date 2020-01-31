@@ -75,6 +75,8 @@ public class AudioPlayerActivity extends AppCompatActivity {
             AudioPlayer.getInstance().stop();
         } else if (id == R.id.audio_seek) {
             AudioPlayer.getInstance().seek(300);
+        } else if (id == R.id.audio_next) {
+            AudioPlayer.getInstance().playNext(Environment.getExternalStorageDirectory().getAbsolutePath() + "/next.mp3");
         }
     }
 }

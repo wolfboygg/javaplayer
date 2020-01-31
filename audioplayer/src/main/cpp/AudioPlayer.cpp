@@ -29,7 +29,8 @@ void AudioPlayer::play() {
 }
 
 int AudioPlayer::resampleAudio() {
-
+    // 需要在调用的时候将data_size重置为0
+    data_size = 0;
     while (audioPlayerStatus != NULL && !audioPlayerStatus->exit) {
         // 在解码中进行处理
         if (this->quene->getQueueSize() == 0) {// 加载中
