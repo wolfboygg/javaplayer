@@ -350,6 +350,18 @@ void AudioFFmpeg::setMute(int mute) {
 
 }
 
+void AudioFFmpeg::setPitch(float pitch) {
+    if (audioPlayer != NULL) {
+        audioPlayer->setPitch(pitch);
+    }
+}
+
+void AudioFFmpeg::setSpeed(float speed) {
+    if (audioPlayer != NULL) {
+        audioPlayer->setSpeed(speed);
+    }
+}
+
 
 
 

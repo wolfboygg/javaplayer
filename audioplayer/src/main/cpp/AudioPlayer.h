@@ -36,7 +36,7 @@
 #include "AudioPlayerStatus.h"
 #include "PlayerQuene.h"
 #include "AudioCallJava.h"
-
+#include "SoundTouch.h"
 
 extern "C" {
 #include "libavcodec/avcodec.h"
@@ -44,6 +44,9 @@ extern "C" {
 #include <SLES/OpenSLES.h>
 #include <SLES/OpenSLES_Android.h>
 };
+
+using namespace soundtouch;
+
 
 class AudioPlayer {
 public:
@@ -93,6 +96,18 @@ public:
     // 缓冲队列接口
     SLAndroidSimpleBufferQueueItf pcmBufferQueue = NULL;
 
+    // 实现变调功能
+    SoundTouch *soundTouch = NULL;
+    SAMPLETYPE *sampleBuffer = NULL;
+    bool finished = true;
+    uint8_t *out_buffer = NULL;
+    int nb = 0;
+    int num = 0;
+
+    float pitch = 1.0f;
+    float speed = 1.0f;
+
+
 
 public:
     AudioPlayer(AudioPlayerStatus *audioPlayerStatus, int sample_rate, AudioCallJava *audioCallJava);
@@ -105,7 +120,7 @@ public:
 
     void resume();
 
-    int resampleAudio();
+    int resampleAudio(void **pcmbuf);
 
     void initOpenSLES();
 
@@ -124,6 +139,12 @@ public:
     void setVolume(int percent);
 
     void setMuteSolo(int mute);
+
+    int getSoundTouchData();
+
+    void setPitch(float pitch);
+
+    void setSpeed(float speed);
 
 };
 

@@ -121,6 +121,44 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/audio_pitch"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="50dp"
+            android:onClick="onClick"
+            android:text="变调" />
+        <Button
+            android:id="@+id/audio_speed"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="50dp"
+            android:onClick="onClick"
+            android:text="变速" />
+        <Button
+            android:id="@+id/audio_pitchspeed"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="50dp"
+            android:onClick="onClick"
+            android:text="变调变速" />
+        <Button
+            android:id="@+id/audio_normal"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="50dp"
+            android:onClick="onClick"
+            android:text="不变" />
+
+
+
+    </LinearLayout>
+
 
     <Button
         android:id="@+id/audio_next"

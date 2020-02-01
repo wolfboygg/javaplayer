@@ -34,6 +34,9 @@ public class AudioPlayer {
 
     private MuteEnum mMuteEnum = null;
 
+    private float mPitch = 1.0f;
+    private float mSpeed = 1.0f;
+
     static {
         System.loadLibrary("audio");
     }
@@ -79,6 +82,8 @@ public class AudioPlayer {
             setVolume(mVolumePercent);
             setMute(mMuteEnum);
             n_start();
+            setPitch(mPitch);
+            setSpeed(mSpeed);
         }).start();
     }
 
@@ -134,6 +139,16 @@ public class AudioPlayer {
         n_mute(muteEnum.getValue());
     }
 
+    public void setPitch(float pitch) {
+        this.mPitch = pitch;
+        n_pitch(pitch);
+    }
+
+    public void setSpeed(float speed) {
+        this.mSpeed = speed;
+        n_speed(speed);
+    }
+
     /**
      * 打开解码器就完成
      */
@@ -157,6 +172,10 @@ public class AudioPlayer {
     private native void n_volume(int precent);
 
     private native void n_mute(int mute);
+
+    private native void n_pitch(float pitch);
+
+    private native void n_speed(float speed);
 
     /**
      * jni层需要调用这个方法通知准备好了

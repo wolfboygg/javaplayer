@@ -8,6 +8,7 @@ cmake_minimum_required(VERSION 3.4.1)
 # 定义变量
 set(distribution_DIR ../../../../libs)
 
+
 # 添加库——自己编写的库
 # 库名称：native-lib
 # 库类型：SHARED，表示动态库，后缀为.so（如果是STATIC，则表示静态库，后缀为.a）
@@ -20,6 +21,19 @@ add_library( audio
         src/main/cpp/AudioPlayerStatus.cpp
         src/main/cpp/AudioPlayer.cpp
         src/main/cpp/PlayerQuene.cpp
+
+        src/main/cpp/soundtouch/SoundTouch/AAFilter.cpp
+        src/main/cpp/soundtouch/SoundTouch/FIFOSampleBuffer.cpp
+        src/main/cpp/soundtouch/SoundTouch/FIRFilter.cpp
+        src/main/cpp/soundtouch/SoundTouch/cpu_detect_x86.cpp
+        src/main/cpp/soundtouch/SoundTouch/sse_optimized.cpp
+        src/main/cpp/soundtouch/SoundTouch/RateTransposer.cpp
+        src/main/cpp/soundtouch/SoundTouch/SoundTouch.cpp
+        src/main/cpp/soundtouch/SoundTouch/InterpolateCubic.cpp
+        src/main/cpp/soundtouch/SoundTouch/InterpolateLinear.cpp
+        src/main/cpp/soundtouch/SoundTouch/InterpolateShannon.cpp
+        src/main/cpp/soundtouch/SoundTouch/TDStretch.cpp
+        src/main/cpp/soundtouch/SoundTouch/PeakFinder.cpp
         )
 
 # 添加库——外部引入的库
@@ -74,6 +88,8 @@ set_target_properties( swscale
 
 # 引入头文件
 include_directories(libs/include)
+include_directories(src/main/cpp/soundtouch/include)
+include_directories(src/main/cpp/soundtouch/SoundTouch)
 
 # 告诉编译器生成native-lib库需要链接的库
 # native-lib库需要依赖avcodec、avfilter等库

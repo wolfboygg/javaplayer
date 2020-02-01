@@ -64,6 +64,8 @@ public class AudioPlayerActivity extends AppCompatActivity {
         mVolumeInfo = findViewById(R.id.volume_info);
         AudioPlayer.getInstance().setVolume(50);
         AudioPlayer.getInstance().setMute(MuteEnum.MUTE_CENTER);
+        AudioPlayer.getInstance().setPitch(1.5f);
+        AudioPlayer.getInstance().setSpeed(1.5f);
         mVolumeInfo.setText("音量:" + AudioPlayer.getInstance().getVolume() + "%");
         mSeekBarVolume.setProgress(AudioPlayer.getInstance().getVolume());
         mSeekBarVolume.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -149,6 +151,18 @@ public class AudioPlayerActivity extends AppCompatActivity {
             AudioPlayer.getInstance().setMute(MuteEnum.MUTE_RIGHT);
         } else if (id == R.id.audio_center) {
             AudioPlayer.getInstance().setMute(MuteEnum.MUTE_CENTER);
+        } else if (id == R.id.audio_pitch) {
+            AudioPlayer.getInstance().setPitch(1.5f);
+            AudioPlayer.getInstance().setSpeed(1.0f);
+        } else if (id == R.id.audio_speed) {
+            AudioPlayer.getInstance().setPitch(1.0f);
+            AudioPlayer.getInstance().setSpeed(1.5f);
+        } else if (id == R.id.audio_pitchspeed) {
+            AudioPlayer.getInstance().setPitch(1.5f);
+            AudioPlayer.getInstance().setSpeed(1.5f);
+        } else if (id == R.id.audio_normal) {
+            AudioPlayer.getInstance().setPitch(1.0f);
+            AudioPlayer.getInstance().setSpeed(1.0f);
         }
     }
 }

@@ -154,3 +154,19 @@ Java_com_ggwolf_audioplayer_AudioPlayer_n_1mute(JNIEnv *env, jobject thiz, jint 
         audioFFmpeg->setMute(mute);
     }
 }
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_ggwolf_audioplayer_AudioPlayer_n_1pitch(JNIEnv *env, jobject thiz, jfloat pitch) {
+    if (audioFFmpeg != NULL) {
+        audioFFmpeg->setPitch(pitch);
+    }
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_ggwolf_audioplayer_AudioPlayer_n_1speed(JNIEnv *env, jobject thiz, jfloat speed) {
+    if (audioFFmpeg != NULL) {
+        audioFFmpeg->setSpeed(speed);
+    }
+}

@@ -11,6 +11,15 @@ AudioPlayer::AudioPlayer(AudioPlayerStatus *audioPlayerStatus, int sample_rate,
     this->audioCallJava = audioCallJava;
     this->quene = new PlayerQuene(this->audioPlayerStatus);
     buffer = (uint8_t *) av_malloc(sample_rate * 2 * 2);
+
+    sampleBuffer = static_cast<SAMPLETYPE *>(malloc(sample_rate * 2 * 2));
+    soundTouch = new SoundTouch();
+    soundTouch->setSampleRate(sample_rate);
+    soundTouch->setChannels(2);
+    soundTouch->setPitch(this->pitch);
+    soundTouch->setTempo(this->speed);
+
+
 }
 
 AudioPlayer::~AudioPlayer() {
@@ -28,7 +37,7 @@ void AudioPlayer::play() {
 
 }
 
-int AudioPlayer::resampleAudio() {
+int AudioPlayer::resampleAudio(void **pcmbuf) {
     // 需要在调用的时候将data_size重置为0
     data_size = 0;
     while (audioPlayerStatus != NULL && !audioPlayerStatus->exit) {
@@ -100,8 +109,8 @@ int AudioPlayer::resampleAudio() {
                 continue;
             }
 
-            // 开始重采样
-            int nb = swr_convert(
+            // 开始重采样 要在外面保存，在SoundTouch的时候进行使用
+            nb = swr_convert(
                     swr_ctx,
                     &buffer,
                     avFrame->nb_samples,
@@ -120,6 +129,7 @@ int AudioPlayer::resampleAudio() {
                 now_time = clock;
             }
             clock = now_time;
+            *pcmbuf = buffer;
 
             if (LOG_DEBUG) {
                 LOGD("data_size is %d", data_size);
@@ -152,7 +162,7 @@ int AudioPlayer::resampleAudio() {
 void pcmBufferCallBack(SLAndroidSimpleBufferQueueItf bf, void *context) {
     AudioPlayer *wlAudio = (AudioPlayer *) context;
     if (wlAudio != NULL) {
-        int buffersize = wlAudio->resampleAudio();
+        int buffersize = wlAudio->getSoundTouchData();
         if (buffersize > 0) {
             // 这里进行处理 加上当前的播放时间
             wlAudio->clock += buffersize / ((double) (wlAudio->sample_rate * 2 * 2));
@@ -162,8 +172,9 @@ void pcmBufferCallBack(SLAndroidSimpleBufferQueueItf bf, void *context) {
                 wlAudio->audioCallJava->onCallTimeInfo(CHILD_THREAD, wlAudio->clock,
                                                        wlAudio->duration);
             }
-            (*wlAudio->pcmBufferQueue)->Enqueue(wlAudio->pcmBufferQueue, (char *) wlAudio->buffer,
-                                                buffersize);
+            (*wlAudio->pcmBufferQueue)->Enqueue(wlAudio->pcmBufferQueue,
+                                                (char *) wlAudio->sampleBuffer,
+                                                buffersize * 2 * 2);
         }
     }
 }
@@ -394,6 +405,59 @@ void AudioPlayer::setMuteSolo(int mute) {
     }
 
 }
+
+int AudioPlayer::getSoundTouchData() {
+    // 开始重新采样进行处理
+
+    while (audioPlayerStatus != NULL && !audioPlayerStatus->exit) {
+        out_buffer = NULL;
+        if (finished) {
+            finished = false;
+            data_size = resampleAudio(reinterpret_cast<void **>(&out_buffer));
+            if (data_size > 0) {
+                // 处理数据 将8位的pcm处理为16位
+                for (int i = 0; i < data_size / 2 + 1; i++) {
+                    sampleBuffer[i] = (out_buffer[i * 2] | (out_buffer[i * 2 + 1] << 8));
+                }
+                soundTouch->putSamples(sampleBuffer, nb);
+                num = soundTouch->receiveSamples(sampleBuffer, data_size / 4);
+            } else {
+                soundTouch->flush();
+            }
+        }
+
+        if (num == 0) {
+            finished = true;
+            continue;
+        } else {
+            if (out_buffer == NULL) {
+                num = soundTouch->receiveSamples(sampleBuffer, data_size / 4);
+                if (num == 0) {
+                    finished = true;
+                    continue;
+                }
+            }
+            return num;
+        }
+    }
+
+    return 0;
+}
+
+void AudioPlayer::setPitch(float pitch) {
+    this->pitch = pitch;
+    if (soundTouch != NULL) {
+        soundTouch->setPitch(pitch);
+    }
+}
+
+void AudioPlayer::setSpeed(float speed) {
+    this->speed = speed;
+    if (soundTouch != NULL) {
+        soundTouch->setTempo(speed);
+    }
+}
+
 
 
 
