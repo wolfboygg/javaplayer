@@ -53,6 +53,8 @@ public:
 
     void seek(int64_t secds);
 
+    void setVolume(int precent);
+
 };
 
 

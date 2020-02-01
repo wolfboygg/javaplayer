@@ -55,6 +55,16 @@
     </LinearLayout>
 
 
+    <TextView
+        android:id="@+id/time_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:text="00:00/00:00"
+        android:textColor="#F00" />
+
+
     <SeekBar
         android:id="@+id/seek_bar"
         android:layout_width="match_parent"
@@ -63,6 +73,24 @@
         android:layout_marginBottom="20dp"
         />
 
+
+    <TextView
+        android:id="@+id/volume_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:text="音量是:"
+        android:textColor="#F00" />
+
+
+    <SeekBar
+        android:id="@+id/seek_bar_volume"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        />
 
 
     <Button
@@ -73,14 +101,6 @@
         android:text="NEXT" />
 
 
-    <TextView
-        android:id="@+id/time_info"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="10dp"
-        android:text="00:00/00:00"
-        android:textColor="#F00" />
 
 
 </LinearLayout>

@@ -29,6 +29,7 @@ public class AudioPlayer {
     private String mSource;
 
     private boolean isPlayNext = false;
+    private int mVolumePercent = 100;
 
     static {
         System.loadLibrary("audio");
@@ -72,6 +73,7 @@ public class AudioPlayer {
             return;
         }
         new Thread(() -> {
+            setVolume(mVolumePercent);
             n_start();
         }).start();
     }
@@ -112,6 +114,17 @@ public class AudioPlayer {
         return duration;
     }
 
+    public void setVolume(int percent) {
+        if (percent >= 0 && percent <=100) {
+            mVolumePercent = percent;
+            n_volume(percent);
+        }
+    }
+
+    public int getVolume() {
+        return mVolumePercent;
+    }
+
     /**
      * 打开解码器就完成
      */
@@ -131,6 +144,8 @@ public class AudioPlayer {
     private native void n_seek(int secds);
 
     private native int n_duration();
+
+    private native void n_volume(int precent);
 
     /**
      * jni层需要调用这个方法通知准备好了

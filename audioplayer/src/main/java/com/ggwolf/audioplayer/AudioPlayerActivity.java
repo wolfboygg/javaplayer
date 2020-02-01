@@ -27,6 +27,10 @@ public class AudioPlayerActivity extends AppCompatActivity {
     private int position;
     private boolean isSeek = false;
 
+    // 音量控制
+    private SeekBar mSeekBarVolume;
+    private TextView mVolumeInfo;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,6 +58,32 @@ public class AudioPlayerActivity extends AppCompatActivity {
                 isSeek = false;
             }
         });
+
+        mSeekBarVolume = findViewById(R.id.seek_bar_volume);
+        mVolumeInfo = findViewById(R.id.volume_info);
+        AudioPlayer.getInstance().setVolume(50);
+        mVolumeInfo.setText("音量:" + AudioPlayer.getInstance().getVolume() + "%");
+        mSeekBarVolume.setProgress(AudioPlayer.getInstance().getVolume());
+        mSeekBarVolume.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                AudioPlayer.getInstance().setVolume(progress);
+                mVolumeInfo.setText("音量:" + AudioPlayer.getInstance().getVolume() + "%");
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+
+
         AudioPlayer.getInstance().setSource(Environment.getExternalStorageDirectory().getAbsolutePath() + "/out.mp3");
         AudioPlayer.getInstance().setListener(() -> {
             LogHelper.i(TAG, "audio prepared on sucesss");

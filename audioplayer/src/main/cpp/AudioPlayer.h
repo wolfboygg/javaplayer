@@ -20,6 +20,9 @@
  *
  *     释放内存的时候要先释放然后在delete然后在置空
  *
+ *
+ *  5.添加音量控制 通过OpenSL的声音接口进行控制
+ *
  */
 
 #ifndef JAVAPLAYER_AUDIOPLAYER_H
@@ -75,6 +78,10 @@ public:
     SLObjectItf pcmPlayerObject = NULL;
     SLPlayItf pcmPlayerPlay = NULL;
 
+    // 声音控制接口
+    SLVolumeItf  pcmPlayerVolume = NULL;
+    int volumePercent = 100;
+
     // 缓冲队列接口
     SLAndroidSimpleBufferQueueItf pcmBufferQueue = NULL;
 
@@ -105,6 +112,8 @@ public:
      * 这个方法用来释放我们需要释放内存
      */
     void release();
+
+    void setVolume(int percent);
 
 };
 

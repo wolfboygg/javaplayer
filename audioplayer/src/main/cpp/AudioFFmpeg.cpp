@@ -335,6 +335,14 @@ void AudioFFmpeg::seek(int64_t secds) {
 
 }
 
+void AudioFFmpeg::setVolume(int precent) {
+    if (audioPlayer != NULL) {
+        audioPlayer->setVolume(precent);
+    }
+
+
+}
+
 
 
 

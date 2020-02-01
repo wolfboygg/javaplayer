@@ -159,7 +159,8 @@ void pcmBufferCallBack(SLAndroidSimpleBufferQueueItf bf, void *context) {
             // 然后控制当前的回调java层的速率
             if (wlAudio->clock - wlAudio->last_time >= 0.1) { // 0.1s回调一次
                 wlAudio->last_time = wlAudio->clock;
-                wlAudio->audioCallJava->onCallTimeInfo(CHILD_THREAD, wlAudio->clock, wlAudio->duration);
+                wlAudio->audioCallJava->onCallTimeInfo(CHILD_THREAD, wlAudio->clock,
+                                                       wlAudio->duration);
             }
             (*wlAudio->pcmBufferQueue)->Enqueue(wlAudio->pcmBufferQueue, (char *) wlAudio->buffer,
                                                 buffersize);
@@ -207,16 +208,20 @@ void AudioPlayer::initOpenSLES() {
     };
     SLDataSource slDataSource = {&android_queue, &pcm};
 
-    const SLInterfaceID ids[1] = {SL_IID_BUFFERQUEUE};
-    const SLboolean req[1] = {SL_BOOLEAN_TRUE};
+    const SLInterfaceID ids[2] = {SL_IID_BUFFERQUEUE, SL_IID_VOLUME};
+    const SLboolean req[2] = {SL_BOOLEAN_TRUE, SL_BOOLEAN_TRUE};
 
-    (*engineEngine)->CreateAudioPlayer(engineEngine, &pcmPlayerObject, &slDataSource, &audioSink, 1,
+    (*engineEngine)->CreateAudioPlayer(engineEngine, &pcmPlayerObject, &slDataSource, &audioSink, 2,
                                        ids, req);
     //初始化播放器
     (*pcmPlayerObject)->Realize(pcmPlayerObject, SL_BOOLEAN_FALSE);
 
 //    得到接口后调用  获取Player接口
     (*pcmPlayerObject)->GetInterface(pcmPlayerObject, SL_IID_PLAY, &pcmPlayerPlay);
+
+    // 获取声音控制接口
+    (*pcmPlayerObject)->GetInterface(pcmPlayerObject, SL_IID_VOLUME, &pcmPlayerVolume);
+    setVolume(volumePercent);
 
 //    注册回调缓冲区 获取缓冲队列接口
     (*pcmPlayerObject)->GetInterface(pcmPlayerObject, SL_IID_BUFFERQUEUE, &pcmBufferQueue);
@@ -300,7 +305,7 @@ void AudioPlayer::release() {
 
     // 释放存储的列表
     if (quene != NULL) {
-        delete(quene);// 这个方法调用会执行这个类的析构函数，然后进行释放队列
+        delete (quene);// 这个方法调用会执行这个类的析构函数，然后进行释放队列
         quene = NULL;
     }
     // 释放播放器
@@ -318,16 +323,16 @@ void AudioPlayer::release() {
     }
     // 释放引擎
     if (engineObject != NULL) {
-        (*engineObject) ->Destroy(engineObject);
+        (*engineObject)->Destroy(engineObject);
         engineEngine = NULL;
     }
     // 释放播放数据buffer
     if (buffer != NULL) {
-        delete(buffer);
+        delete (buffer);
         buffer = NULL;
     }
     // 释放解码器上下文
-    if (avCodecContext !=NULL) {
+    if (avCodecContext != NULL) {
         avcodec_close(avCodecContext);
         avcodec_free_context(&avCodecContext);
         avCodecContext = NULL;
@@ -338,6 +343,32 @@ void AudioPlayer::release() {
     }
     if (audioCallJava != NULL) {
         audioCallJava = NULL;
+    }
+
+}
+
+void AudioPlayer::setVolume(int percent) {
+    volumePercent = percent;
+    if (pcmPlayerVolume != NULL) {
+        if (percent > 30) {
+            (*pcmPlayerVolume)->SetVolumeLevel(pcmPlayerVolume, (100 - percent) * -20);
+        } else if (percent > 25) {
+            (*pcmPlayerVolume)->SetVolumeLevel(pcmPlayerVolume, (100 - percent) * -22);
+        } else if (percent > 20) {
+            (*pcmPlayerVolume)->SetVolumeLevel(pcmPlayerVolume, (100 - percent) * -25);
+        } else if (percent > 15) {
+            (*pcmPlayerVolume)->SetVolumeLevel(pcmPlayerVolume, (100 - percent) * -28);
+        } else if (percent > 10) {
+            (*pcmPlayerVolume)->SetVolumeLevel(pcmPlayerVolume, (100 - percent) * -30);
+        } else if (percent > 5) {
+            (*pcmPlayerVolume)->SetVolumeLevel(pcmPlayerVolume, (100 - percent) * -34);
+        } else if (percent > 3) {
+            (*pcmPlayerVolume)->SetVolumeLevel(pcmPlayerVolume, (100 - percent) * -37);
+        } else if (percent > 0) {
+            (*pcmPlayerVolume)->SetVolumeLevel(pcmPlayerVolume, (100 - percent) * -40);
+        } else {
+            (*pcmPlayerVolume)->SetVolumeLevel(pcmPlayerVolume, (100 - percent) * -100);
+        }
     }
 
 }
