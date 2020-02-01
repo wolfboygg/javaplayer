@@ -55,6 +55,8 @@ public:
 
     void setVolume(int precent);
 
+    void setMute(int mute);
+
 };
 
 

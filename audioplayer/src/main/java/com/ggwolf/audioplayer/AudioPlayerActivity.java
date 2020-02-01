@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.ggwolf.audioplayer.audiobean.MuteEnum;
 import com.ggwolf.audioplayer.listener.OnLoadListener;
 import com.ggwolf.audioplayer.listener.OnTimeInfoListener;
 import com.ggwolf.audioplayer.utils.LogHelper;
@@ -62,6 +63,7 @@ public class AudioPlayerActivity extends AppCompatActivity {
         mSeekBarVolume = findViewById(R.id.seek_bar_volume);
         mVolumeInfo = findViewById(R.id.volume_info);
         AudioPlayer.getInstance().setVolume(50);
+        AudioPlayer.getInstance().setMute(MuteEnum.MUTE_CENTER);
         mVolumeInfo.setText("音量:" + AudioPlayer.getInstance().getVolume() + "%");
         mSeekBarVolume.setProgress(AudioPlayer.getInstance().getVolume());
         mSeekBarVolume.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -141,6 +143,12 @@ public class AudioPlayerActivity extends AppCompatActivity {
             AudioPlayer.getInstance().seek(300);
         } else if (id == R.id.audio_next) {
             AudioPlayer.getInstance().playNext(Environment.getExternalStorageDirectory().getAbsolutePath() + "/next.mp3");
+        } else if (id == R.id.audio_left) {
+            AudioPlayer.getInstance().setMute(MuteEnum.MUTE_LEFT);
+        } else if (id == R.id.audio_right) {
+            AudioPlayer.getInstance().setMute(MuteEnum.MUTE_RIGHT);
+        } else if (id == R.id.audio_center) {
+            AudioPlayer.getInstance().setMute(MuteEnum.MUTE_CENTER);
         }
     }
 }

@@ -2,6 +2,7 @@ package com.ggwolf.audioplayer;
 
 import android.text.TextUtils;
 
+import com.ggwolf.audioplayer.audiobean.MuteEnum;
 import com.ggwolf.audioplayer.listener.OnCompleteListener;
 import com.ggwolf.audioplayer.listener.OnErrorListener;
 import com.ggwolf.audioplayer.listener.OnLoadListener;
@@ -30,6 +31,8 @@ public class AudioPlayer {
 
     private boolean isPlayNext = false;
     private int mVolumePercent = 100;
+
+    private MuteEnum mMuteEnum = null;
 
     static {
         System.loadLibrary("audio");
@@ -74,6 +77,7 @@ public class AudioPlayer {
         }
         new Thread(() -> {
             setVolume(mVolumePercent);
+            setMute(mMuteEnum);
             n_start();
         }).start();
     }
@@ -125,6 +129,11 @@ public class AudioPlayer {
         return mVolumePercent;
     }
 
+    public void setMute(MuteEnum muteEnum) {
+        mMuteEnum = muteEnum;
+        n_mute(muteEnum.getValue());
+    }
+
     /**
      * 打开解码器就完成
      */
@@ -146,6 +155,8 @@ public class AudioPlayer {
     private native int n_duration();
 
     private native void n_volume(int precent);
+
+    private native void n_mute(int mute);
 
     /**
      * jni层需要调用这个方法通知准备好了

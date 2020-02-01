@@ -343,6 +343,13 @@ void AudioFFmpeg::setVolume(int precent) {
 
 }
 
+void AudioFFmpeg::setMute(int mute) {
+    if (audioPlayer != NULL) {
+        audioPlayer->setMuteSolo(mute);
+    }
+
+}
+
 
 
 

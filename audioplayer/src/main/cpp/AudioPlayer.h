@@ -23,6 +23,11 @@
  *
  *  5.添加音量控制 通过OpenSL的声音接口进行控制
  *
+ *  6.添加声道控制功能
+ *      通过OpenSL ES的声道控制接口进行处理
+ *
+ *
+ *
  */
 
 #ifndef JAVAPLAYER_AUDIOPLAYER_H
@@ -82,6 +87,9 @@ public:
     SLVolumeItf  pcmPlayerVolume = NULL;
     int volumePercent = 100;
 
+    SLMuteSoloItf  pcmPlayerMute = NULL;
+    int muteSolo = 2;
+
     // 缓冲队列接口
     SLAndroidSimpleBufferQueueItf pcmBufferQueue = NULL;
 
@@ -114,6 +122,8 @@ public:
     void release();
 
     void setVolume(int percent);
+
+    void setMuteSolo(int mute);
 
 };
 

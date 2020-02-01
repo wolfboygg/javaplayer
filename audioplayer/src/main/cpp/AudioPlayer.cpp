@@ -208,10 +208,10 @@ void AudioPlayer::initOpenSLES() {
     };
     SLDataSource slDataSource = {&android_queue, &pcm};
 
-    const SLInterfaceID ids[2] = {SL_IID_BUFFERQUEUE, SL_IID_VOLUME};
-    const SLboolean req[2] = {SL_BOOLEAN_TRUE, SL_BOOLEAN_TRUE};
+    const SLInterfaceID ids[3] = {SL_IID_BUFFERQUEUE, SL_IID_VOLUME, SL_IID_MUTESOLO};
+    const SLboolean req[3] = {SL_BOOLEAN_TRUE, SL_BOOLEAN_TRUE, SL_BOOLEAN_TRUE};
 
-    (*engineEngine)->CreateAudioPlayer(engineEngine, &pcmPlayerObject, &slDataSource, &audioSink, 2,
+    (*engineEngine)->CreateAudioPlayer(engineEngine, &pcmPlayerObject, &slDataSource, &audioSink, 3,
                                        ids, req);
     //初始化播放器
     (*pcmPlayerObject)->Realize(pcmPlayerObject, SL_BOOLEAN_FALSE);
@@ -222,6 +222,10 @@ void AudioPlayer::initOpenSLES() {
     // 获取声音控制接口
     (*pcmPlayerObject)->GetInterface(pcmPlayerObject, SL_IID_VOLUME, &pcmPlayerVolume);
     setVolume(volumePercent);
+
+    // 获取声道控制接口
+    (*pcmPlayerObject)->GetInterface(pcmPlayerObject, SL_IID_MUTESOLO, &pcmPlayerMute);
+    setMuteSolo(muteSolo);
 
 //    注册回调缓冲区 获取缓冲队列接口
     (*pcmPlayerObject)->GetInterface(pcmPlayerObject, SL_IID_BUFFERQUEUE, &pcmBufferQueue);
@@ -368,6 +372,24 @@ void AudioPlayer::setVolume(int percent) {
             (*pcmPlayerVolume)->SetVolumeLevel(pcmPlayerVolume, (100 - percent) * -40);
         } else {
             (*pcmPlayerVolume)->SetVolumeLevel(pcmPlayerVolume, (100 - percent) * -100);
+        }
+    }
+
+}
+
+void AudioPlayer::setMuteSolo(int mute) {
+    // 进行控制
+    this->muteSolo = mute;
+    if (pcmPlayerMute != NULL) {
+        if (mute == 0) {// right
+            (*pcmPlayerMute)->SetChannelMute(pcmPlayerMute, 0, SL_BOOLEAN_TRUE);
+            (*pcmPlayerMute)->SetChannelMute(pcmPlayerMute, 1, SL_BOOLEAN_FALSE);
+        } else if (mute == 1) {// left
+            (*pcmPlayerMute)->SetChannelMute(pcmPlayerMute, 0, SL_BOOLEAN_FALSE);
+            (*pcmPlayerMute)->SetChannelMute(pcmPlayerMute, 1, SL_BOOLEAN_TRUE);
+        } else if (mute == 2) {// center
+            (*pcmPlayerMute)->SetChannelMute(pcmPlayerMute, 0, SL_BOOLEAN_FALSE);
+            (*pcmPlayerMute)->SetChannelMute(pcmPlayerMute, 1, SL_BOOLEAN_FALSE);
         }
     }
 

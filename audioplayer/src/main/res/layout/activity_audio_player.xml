@@ -92,6 +92,35 @@
         android:layout_marginBottom="20dp"
         />
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <Button
+            android:id="@+id/audio_left"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="50dp"
+            android:onClick="onClick"
+            android:text="左声道" />
+        <Button
+            android:id="@+id/audio_right"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="50dp"
+            android:onClick="onClick"
+            android:text="右声道" />
+        <Button
+            android:id="@+id/audio_center"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="50dp"
+            android:onClick="onClick"
+            android:text="立体声" />
+
+
+    </LinearLayout>
+
 
     <Button
         android:id="@+id/audio_next"
