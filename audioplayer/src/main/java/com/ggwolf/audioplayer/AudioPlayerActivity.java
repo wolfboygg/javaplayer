@@ -41,7 +41,7 @@ public class AudioPlayerActivity extends AppCompatActivity {
         mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if (AudioPlayer.getInstance().getDuration() > 0 && isSeek)  {
+                if (AudioPlayer.getInstance().getDuration() > 0 && isSeek) {
                     position = progress * AudioPlayer.getInstance().getDuration() / 100;
 //                    AudioPlayer.getInstance().seek(position);
                 }
@@ -54,7 +54,7 @@ public class AudioPlayerActivity extends AppCompatActivity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                LogHelper.i("guo","11111111");
+                LogHelper.i("guo", "11111111");
                 AudioPlayer.getInstance().seek(position);
                 isSeek = false;
             }
@@ -85,7 +85,6 @@ public class AudioPlayerActivity extends AppCompatActivity {
 
             }
         });
-
 
 
         AudioPlayer.getInstance().setSource(Environment.getExternalStorageDirectory().getAbsolutePath() + "/out.mp3");
@@ -128,6 +127,10 @@ public class AudioPlayerActivity extends AppCompatActivity {
 
         AudioPlayer.getInstance().setOnCompleteListener(() -> {
             LogHelper.i(TAG, "播放完成");
+        });
+
+        AudioPlayer.getInstance().setOnPcmDbListener(db -> {
+            LogHelper.i(TAG, "db is:" + db);
         });
     }
 

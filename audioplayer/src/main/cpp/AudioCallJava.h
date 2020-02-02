@@ -27,6 +27,8 @@ public:
     jmethodID jmethodIdOnErrorInfo;
     jmethodID jmethodIdOnComplete;
 
+    jmethodID jmethodIdOnPcmDb;
+
     AudioCallJava(JavaVM *vm, JNIEnv *env, jobject *obj);
     ~AudioCallJava();
 
@@ -39,6 +41,8 @@ public:
     void onCallErrorInfo(int type, int code, char* msg);
 
     void onCallComplete(int type);
+
+    void onCallPcmDB(int type, int db);
 
 
 };

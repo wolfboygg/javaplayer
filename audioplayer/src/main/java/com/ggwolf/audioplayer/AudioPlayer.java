@@ -7,6 +7,7 @@ import com.ggwolf.audioplayer.listener.OnCompleteListener;
 import com.ggwolf.audioplayer.listener.OnErrorListener;
 import com.ggwolf.audioplayer.listener.OnLoadListener;
 import com.ggwolf.audioplayer.listener.OnPauseResumeListener;
+import com.ggwolf.audioplayer.listener.OnPcmDbListener;
 import com.ggwolf.audioplayer.listener.OnTimeInfoListener;
 import com.ggwolf.audioplayer.utils.LogHelper;
 
@@ -23,6 +24,7 @@ public class AudioPlayer {
     private OnTimeInfoListener onTimeInfoListener;
     private OnErrorListener onErrorListener;
     private OnCompleteListener onCompleteListener;
+    private OnPcmDbListener onPcmDbListener;
 
     /**
      * 播放资源的地址
@@ -243,6 +245,16 @@ public class AudioPlayer {
         }
     }
 
+    /**
+     * 计算当前播放pcm的分贝值
+     * @param db
+     */
+    public void onCallPcmDB(int db) {
+        if (onPcmDbListener != null) {
+            onPcmDbListener.onPcmDb(db);
+        }
+    }
+
 
     public void setListener(OnPreparedListener listener) {
         this.listener = listener;
@@ -270,6 +282,10 @@ public class AudioPlayer {
 
     public void setOnCompleteListener(OnCompleteListener onCompleteListener) {
         this.onCompleteListener = onCompleteListener;
+    }
+
+    public void setOnPcmDbListener(OnPcmDbListener onPcmDbListener) {
+        this.onPcmDbListener = onPcmDbListener;
     }
 
     public interface OnPreparedListener {
