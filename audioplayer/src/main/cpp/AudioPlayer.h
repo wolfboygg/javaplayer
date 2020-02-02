@@ -108,6 +108,9 @@ public:
     float speed = 1.0f;
 
 
+    bool isRecordPcm = false;
+
+
 
 public:
     AudioPlayer(AudioPlayerStatus *audioPlayerStatus, int sample_rate, AudioCallJava *audioCallJava);
@@ -147,6 +150,8 @@ public:
     void setSpeed(float speed);
 
     int getPCMDB(char *pcmdata, size_t pcmsize);
+
+    void startStopRecord(bool start);
 
 };
 

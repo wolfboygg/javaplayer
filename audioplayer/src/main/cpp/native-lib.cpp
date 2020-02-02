@@ -170,3 +170,20 @@ Java_com_ggwolf_audioplayer_AudioPlayer_n_1speed(JNIEnv *env, jobject thiz, jflo
         audioFFmpeg->setSpeed(speed);
     }
 }
+
+extern "C"
+JNIEXPORT jint JNICALL
+Java_com_ggwolf_audioplayer_AudioPlayer_n_1samplerate(JNIEnv *env, jobject thiz) {
+    if (audioFFmpeg != NULL) {
+        return audioFFmpeg->getSampleRate();
+    }
+    return 0;
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_ggwolf_audioplayer_AudioPlayer_n_1startstoprecord(JNIEnv *env, jobject thiz, jboolean startstoprecord) {
+    if (audioFFmpeg != NULL) {
+        audioFFmpeg->startStopRecord(startstoprecord);
+    }
+}

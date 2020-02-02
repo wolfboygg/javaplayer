@@ -29,6 +29,8 @@ public:
 
     jmethodID jmethodIdOnPcmDb;
 
+    jmethodID jmethodIdRecordAAC;
+
     AudioCallJava(JavaVM *vm, JNIEnv *env, jobject *obj);
     ~AudioCallJava();
 
@@ -43,6 +45,8 @@ public:
     void onCallComplete(int type);
 
     void onCallPcmDB(int type, int db);
+
+    void onCallPcmRecord(int type, int size, void *buffer);
 
 
 };

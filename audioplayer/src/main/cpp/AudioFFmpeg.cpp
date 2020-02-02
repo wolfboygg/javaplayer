@@ -362,6 +362,19 @@ void AudioFFmpeg::setSpeed(float speed) {
     }
 }
 
+int AudioFFmpeg::getSampleRate() {
+    if (audioPlayer != NULL) {
+        return audioPlayer->avCodecContext->sample_rate;
+    }
+    return 0;
+}
+
+void AudioFFmpeg::startStopRecord(bool startStop) {
+    if (audioPlayer != NULL) {
+        audioPlayer->startStopRecord(startStop);
+    }
+}
+
 
 
 

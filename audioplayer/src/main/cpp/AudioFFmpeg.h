@@ -61,6 +61,10 @@ public:
 
     void setSpeed(float speed);
 
+    int getSampleRate();
+
+    void startStopRecord(bool startStop);
+
 };
 
 

@@ -176,6 +176,12 @@ void pcmBufferCallBack(SLAndroidSimpleBufferQueueItf bf, void *context) {
             wlAudio->audioCallJava->onCallPcmDB(CHILD_THREAD, wlAudio->getPCMDB(
                     reinterpret_cast<char *>(wlAudio->sampleBuffer), buffersize * 2 * 2));
 
+            // 进行回调处理然后进行录制
+            if (wlAudio->isRecordPcm) {
+                wlAudio->audioCallJava->onCallPcmRecord(CHILD_THREAD, buffersize * 2 * 2,
+                                                        wlAudio->sampleBuffer);
+            }
+
             (*wlAudio->pcmBufferQueue)->Enqueue(wlAudio->pcmBufferQueue,
                                                 (char *) wlAudio->sampleBuffer,
                                                 buffersize * 2 * 2);
@@ -223,8 +229,9 @@ void AudioPlayer::initOpenSLES() {
     };
     SLDataSource slDataSource = {&android_queue, &pcm};
 
-    const SLInterfaceID ids[3] = {SL_IID_BUFFERQUEUE, SL_IID_VOLUME, SL_IID_MUTESOLO};
-    const SLboolean req[3] = {SL_BOOLEAN_TRUE, SL_BOOLEAN_TRUE, SL_BOOLEAN_TRUE};
+    // SL_IID_PLAYBACKRATE 自动控制采样率的功能
+    const SLInterfaceID ids[4] = {SL_IID_BUFFERQUEUE, SL_IID_VOLUME, SL_IID_PLAYBACKRATE, SL_IID_MUTESOLO};
+    const SLboolean req[4] = {SL_BOOLEAN_TRUE, SL_BOOLEAN_TRUE, SL_BOOLEAN_TRUE, SL_BOOLEAN_TRUE};
 
     (*engineEngine)->CreateAudioPlayer(engineEngine, &pcmPlayerObject, &slDataSource, &audioSink, 3,
                                        ids, req);
@@ -410,6 +417,10 @@ void AudioPlayer::setMuteSolo(int mute) {
 
 }
 
+/**
+ *
+ * @return 返回采样率
+ */
 int AudioPlayer::getSoundTouchData() {
     // 开始重新采样进行处理
 
@@ -480,6 +491,10 @@ int AudioPlayer::getPCMDB(char *pcmdata, size_t pcmsize) {
     }
 
     return db;
+}
+
+void AudioPlayer::startStopRecord(bool start) {
+    this->isRecordPcm = start;
 }
 
 

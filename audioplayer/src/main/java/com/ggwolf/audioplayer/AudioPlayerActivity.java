@@ -15,6 +15,8 @@ import com.ggwolf.audioplayer.listener.OnTimeInfoListener;
 import com.ggwolf.audioplayer.utils.LogHelper;
 import com.ggwolf.audioplayer.utils.TimeUtils;
 
+import java.io.File;
+
 /**
  * 使用ffmpeg解码视频文件，然后使用opensl进行播放
  */
@@ -130,7 +132,7 @@ public class AudioPlayerActivity extends AppCompatActivity {
         });
 
         AudioPlayer.getInstance().setOnPcmDbListener(db -> {
-            LogHelper.i(TAG, "db is:" + db);
+//            LogHelper.i(TAG, "db is:" + db);
         });
     }
 
@@ -166,6 +168,14 @@ public class AudioPlayerActivity extends AppCompatActivity {
         } else if (id == R.id.audio_normal) {
             AudioPlayer.getInstance().setPitch(1.0f);
             AudioPlayer.getInstance().setSpeed(1.0f);
+        } else if (id == R.id.start_record) {
+            AudioPlayer.getInstance().startRecord(new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/record.aac"));
+        } else if (id == R.id.pause_record) {
+            AudioPlayer.getInstance().pauseRecord();
+        } else if (id == R.id.resume_record) {
+            AudioPlayer.getInstance().resumeRecord();
+        } else if (id == R.id.stop_record) {
+            AudioPlayer.getInstance().stopRecord();
         }
     }
 }

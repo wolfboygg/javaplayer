@@ -39,6 +39,8 @@ AudioCallJava::AudioCallJava(JavaVM *vm, JNIEnv *env, jobject *obj) {
 
     jmethodIdOnPcmDb = env->GetMethodID(clz, "onCallPcmDB", "(I)V");
 
+    jmethodIdRecordAAC = env->GetMethodID(clz, "encodecPcmToAcc", "(I[B)V");
+
 }
 
 AudioCallJava::~AudioCallJava() {
@@ -193,4 +195,35 @@ void AudioCallJava::onCallPcmDB(int type, int db) {
         this->vm->DetachCurrentThread();
 
     }
+}
+
+void AudioCallJava::onCallPcmRecord(int type, int size, void *buffer) {
+
+    if (type == MAIN_THREAD) {
+        // 直接进行调用
+        // 将buffer转换为jni层的数组
+        jbyteArray jbuffer = env->NewByteArray(size);
+        env->SetByteArrayRegion(jbuffer, 0, size, static_cast<const jbyte *>(buffer));
+        this->env->CallVoidMethod(this->jobj, jmethodIdRecordAAC, size, jbuffer);
+        env->DeleteLocalRef(jbuffer);
+
+    } else if (type == CHILD_THREAD) {
+
+        // 需要从自线程中绑定获取JNIEnv对象
+        JNIEnv *jniEnv = NULL;
+        if (this->vm->AttachCurrentThread(&jniEnv, 0) != JNI_OK) {
+            if (LOG_DEBUG) {
+                LOGD("get child thread jnienv wrong");
+            }
+            return;
+        }
+        //然后进行调用
+        jbyteArray jbuffer = jniEnv->NewByteArray(size);
+        jniEnv->SetByteArrayRegion(jbuffer, 0, size, static_cast<const jbyte *>(buffer));
+        jniEnv->CallVoidMethod(this->jobj, jmethodIdRecordAAC, size, jbuffer);
+        jniEnv->DeleteLocalRef(jbuffer);
+        this->vm->DetachCurrentThread();
+
+    }
+
 }
