@@ -11,6 +11,7 @@ import com.ggwolf.audioplayer.listener.OnErrorListener;
 import com.ggwolf.audioplayer.listener.OnLoadListener;
 import com.ggwolf.audioplayer.listener.OnPauseResumeListener;
 import com.ggwolf.audioplayer.listener.OnPcmDbListener;
+import com.ggwolf.audioplayer.listener.OnRecordTimeLitener;
 import com.ggwolf.audioplayer.listener.OnTimeInfoListener;
 import com.ggwolf.audioplayer.utils.LogHelper;
 
@@ -37,6 +38,7 @@ public class AudioPlayer {
     private OnErrorListener onErrorListener;
     private OnCompleteListener onCompleteListener;
     private OnPcmDbListener onPcmDbListener;
+    private OnRecordTimeLitener onRecordTimeLitener;
 
     /**
      * 播放资源的地址
@@ -53,6 +55,8 @@ public class AudioPlayer {
 
     private boolean initmediacodec = false;
     private int mSampleRate = 0;
+
+    private double recordTime = 0;
 
     static {
         System.loadLibrary("audio");
@@ -347,6 +351,10 @@ public class AudioPlayer {
         this.onPcmDbListener = onPcmDbListener;
     }
 
+    public void setOnRecordTimeLitener(OnRecordTimeLitener onRecordTimeLitener) {
+        this.onRecordTimeLitener = onRecordTimeLitener;
+    }
+
     public interface OnPreparedListener {
         void onPrepard();
     }
@@ -362,6 +370,7 @@ public class AudioPlayer {
 
     public void initMediaCode(int sampleRate, File outFile) {
         try {
+            recordTime = 0;
             aacSampleRate = getADTSSampleRate(sampleRate);
             encoderFormat = MediaFormat.createAudioFormat(MediaFormat.MIMETYPE_AUDIO_AAC, sampleRate, 2);
             encoderFormat.setInteger(MediaFormat.KEY_BIT_RATE, 96000);
@@ -393,6 +402,11 @@ public class AudioPlayer {
      */
     public void encodecPcmToAcc(int size, byte[] buffer) {
         if (buffer != null && encoder != null) {
+            recordTime += (size * 1.0f) / (mSampleRate * 2 * 2);
+            if (onRecordTimeLitener != null) {
+                onRecordTimeLitener.onRecordTime((int) recordTime);
+            }
+
             int inputBufferIndex = encoder.dequeueInputBuffer(0);
             if (inputBufferIndex >= 0) {
                 // 将数据塞到编码器
@@ -508,6 +522,8 @@ public class AudioPlayer {
         }
 
         try {
+            recordTime= 0;
+
             outputStream.close();
             outputStream = null;
 

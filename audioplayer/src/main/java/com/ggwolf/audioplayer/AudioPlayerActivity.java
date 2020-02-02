@@ -134,6 +134,10 @@ public class AudioPlayerActivity extends AppCompatActivity {
         AudioPlayer.getInstance().setOnPcmDbListener(db -> {
 //            LogHelper.i(TAG, "db is:" + db);
         });
+
+        AudioPlayer.getInstance().setOnRecordTimeLitener(time -> {
+            LogHelper.i(TAG, "RecordTime is " + time);
+        });
     }
 
     public void onClick(View view) {
