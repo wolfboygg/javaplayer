@@ -174,10 +174,12 @@ void AudioFFmpeg::start() {
     while (audioPlayerStatus != NULL && !audioPlayerStatus->exit) {
 
         if (audioPlayerStatus->seek) {
+            av_usleep(1000 * 100);// 休眠100毫秒
             continue;
         }
         // 判断要写到获取AVPacket前面
-        if (audioPlayer->quene->getQueueSize() > 40) {
+        if (audioPlayer->quene->getQueueSize() > 100) {
+            av_usleep(1000 * 100);// 休眠100毫秒
             continue;
         }
         // 开始读取数据
@@ -209,6 +211,7 @@ void AudioFFmpeg::start() {
             while (audioPlayerStatus != NULL && !audioPlayerStatus->exit) {
                 // 这里要继续传输数据
                 if (audioPlayer->quene->getQueueSize() > 0) {// 表示还有数据
+                    av_usleep(1000 * 100);// 休眠100毫秒
                     continue;
                 } else {
                     audioPlayerStatus->exit = true;
@@ -325,6 +328,10 @@ void AudioFFmpeg::seek(int64_t secds) {
 
             pthread_mutex_lock(&seek_mutex);
             int64_t seek_secds = secds * AV_TIME_BASE;
+
+            // 如果AVPacket中包含多个avFrame,那么在seek的时候会出现问题，我们需要清空缓存然后在进行seek
+            avcodec_flush_buffers(audioPlayer->avCodecContext);
+
             avformat_seek_file(avFormatContext, -1, INT64_MIN, seek_secds, INT64_MAX, 0);
 
             pthread_mutex_unlock(&seek_mutex);

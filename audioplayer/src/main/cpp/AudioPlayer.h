@@ -43,6 +43,7 @@ extern "C" {
 #include "libswresample/swresample.h"
 #include <SLES/OpenSLES.h>
 #include <SLES/OpenSLES_Android.h>
+#include <libavutil/time.h>
 };
 
 using namespace soundtouch;
@@ -109,6 +110,8 @@ public:
 
 
     bool isRecordPcm = false;
+
+    bool readFrameFinished = true;
 
 
 

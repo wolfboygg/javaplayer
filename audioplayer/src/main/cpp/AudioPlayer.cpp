@@ -41,12 +41,19 @@ int AudioPlayer::resampleAudio(void **pcmbuf) {
     // 需要在调用的时候将data_size重置为0
     data_size = 0;
     while (audioPlayerStatus != NULL && !audioPlayerStatus->exit) {
+
+        if (audioPlayerStatus->seek) {
+            av_usleep(1000 * 100);// 休眠100毫秒
+            continue;
+        }
+
         // 在解码中进行处理
         if (this->quene->getQueueSize() == 0) {// 加载中
             if (!audioPlayerStatus->load) {
                 audioPlayerStatus->load = true;
                 audioCallJava->onCallOnLoad(CHILD_THREAD, true);
             }
+            av_usleep(1000 * 100);// 休眠100毫秒
             continue;
         } else {
             if (audioPlayerStatus->load) {
@@ -55,29 +62,33 @@ int AudioPlayer::resampleAudio(void **pcmbuf) {
             }
         }
         // 开始解码
+        // getAvpacket有线程锁，所以不需要加
         avPacket = av_packet_alloc();
-        if (quene->getAvpacket(avPacket) != 0) {
-            // 表示失败了， 释放资源
-            av_packet_free(&avPacket);
-            av_free(avPacket);
-            avPacket = NULL;
-            continue;
-        }
-        // 获取成功 进行解码
-        ret = avcodec_send_packet(avCodecContext, avPacket);
-        if (ret != 0) {// 表示失败了
-            if (LOG_DEBUG) {
-                LOGD("解码失败")
+        if (readFrameFinished) {
+            if (quene->getAvpacket(avPacket) != 0) {
+                // 表示失败了， 释放资源
+                av_packet_free(&avPacket);
+                av_free(avPacket);
+                avPacket = NULL;
+                continue;
             }
-            av_packet_free(&avPacket);
-            av_free(avPacket);
-            avPacket = NULL;
-            continue;
+            // 获取成功 进行解码
+            ret = avcodec_send_packet(avCodecContext, avPacket);
+            if (ret != 0) {// 表示失败了
+                if (LOG_DEBUG) {
+                    LOGD("解码失败")
+                }
+                av_packet_free(&avPacket);
+                av_free(avPacket);
+                avPacket = NULL;
+                continue;
+            }
         }
         // 接收
         avFrame = av_frame_alloc();
         ret = avcodec_receive_frame(avCodecContext, avFrame);
         if (ret == 0) {
+            readFrameFinished = false;
             // 这里进行重采样等操作
             if (avFrame->channels > 0 && avFrame->channel_layout == 0) {
                 avFrame->channel_layout = av_get_default_channel_layout(avFrame->channels);
@@ -106,6 +117,7 @@ int AudioPlayer::resampleAudio(void **pcmbuf) {
                 av_free(avFrame);
                 avFrame = NULL;
                 swr_free(&swr_ctx);
+                readFrameFinished = true;
                 continue;
             }
 
@@ -135,9 +147,6 @@ int AudioPlayer::resampleAudio(void **pcmbuf) {
                 LOGD("data_size is %d", data_size);
             }
 
-            av_packet_free(&avPacket);
-            av_free(avPacket);
-            avPacket = NULL;
             av_frame_free(&avFrame);
             av_free(avFrame);
             avFrame = NULL;
@@ -147,6 +156,7 @@ int AudioPlayer::resampleAudio(void **pcmbuf) {
             if (LOG_DEBUG) {
                 LOGD("接收失败")
             }
+            readFrameFinished = true;
             av_packet_free(&avPacket);
             av_free(avPacket);
             avPacket = NULL;
@@ -340,6 +350,8 @@ void AudioPlayer::release() {
         pcmPlayerObject = NULL;
         pcmPlayerPlay = NULL;
         pcmBufferQueue = NULL;
+        pcmPlayerMute = NULL;
+        pcmPlayerVolume = NULL;
     }
     // 释放混音器
     if (outputMixObject != NULL) {
@@ -357,6 +369,22 @@ void AudioPlayer::release() {
         delete (buffer);
         buffer = NULL;
     }
+
+    if (out_buffer != NULL) {
+        out_buffer = NULL;
+    }
+
+    if (soundTouch != NULL) {
+        delete(soundTouch);
+        soundTouch = NULL;
+    }
+
+    if (sampleBuffer != NULL) {
+        free(sampleBuffer);
+        sampleBuffer = NULL;
+    }
+
+
     // 释放解码器上下文
     if (avCodecContext != NULL) {
         avcodec_close(avCodecContext);
