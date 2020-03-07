@@ -55,6 +55,15 @@ public class CustomerView extends View {
     }
 
     @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        // 这个方法调用之后就可以知道此view预期的大小
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        int width = resolveSize(100, widthMeasureSpec);
+        int height = resolveSize(100, heightMeasureSpec);
+        setMeasuredDimension(width, height);
+    }
+
+    @Override
     public boolean onTouchEvent(MotionEvent event) {
         super.onTouchEvent(event);
         int action = event.getAction();
@@ -129,5 +138,11 @@ public class CustomerView extends View {
             ((View)getParent()).scrollTo(mScroller.getCurrX(), mScroller.getCurrY());
         }
         invalidate();
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        getParent().requestDisallowInterceptTouchEvent(false); // 父view拦截事件
+        return super.dispatchTouchEvent(event);
     }
 }
