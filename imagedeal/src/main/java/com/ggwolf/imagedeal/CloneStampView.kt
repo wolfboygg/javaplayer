@@ -91,29 +91,12 @@ class CloneStampView @kotlin.jvm.JvmOverloads constructor(
                     newDestPoint.x = event.x.toInt()
                     newDestPoint.y = event.y.toInt()
                     // 判断移动的角度用来确定源的像素值
-
-                    if (newDestPoint.x - PAINT_WIDTH <= 0) {
-                        return true
-                    }
-
-                    if (newDestPoint.x + PAINT_WIDTH >= bitmap.width) {
-                        return true
-                    }
-
-                    if (newDestPoint.y - PAINT_WIDTH <= 0) {
-                        return true
-                    }
-
-                    if (newDestPoint.y + PAINT_WIDTH >= bitmap.height) {
-                        return true
-                    }
-
                     var distansX = (newDestPoint.x - oldDestPoint.x).toDouble()
                     var distansY = (newDestPoint.y - oldDestPoint.y).toDouble()
 
                     var pi_angle = atan(distansY / distansX)
 
-                    var userDistanX = cos(pi_angle) * sqrt(Math.pow(distansX, 2.toDouble()) + distansY.pow(2.toDouble()))
+                    var userDistanX = cos(pi_angle) * sqrt(distansX.pow(2.toDouble()) + distansY.pow(2.toDouble()))
                     var userDistanY = sin(pi_angle) * sqrt(distansX.pow(2.toDouble()) + distansY.pow(2.toDouble()))
 
                     newSourcePoint.x = oldSourcePoint.x + userDistanX.toInt()
@@ -128,13 +111,41 @@ class CloneStampView @kotlin.jvm.JvmOverloads constructor(
         return true
     }
 
+    // 解决边界问题
     fun cloneSourceToDest(src: Point, dst: Point) {
         // 得到我们的矩形
+        println("cloneSourceToDest....")
         var srcRect: Rect = Rect(src.x - PAINT_WIDTH, src.y - PAINT_WIDTH, src.x + PAINT_WIDTH, src.y + PAINT_WIDTH)
         var dstRect: Rect = Rect(dst.x - PAINT_WIDTH, dst.y - PAINT_WIDTH, dst.x + PAINT_WIDTH, dst.y + PAINT_WIDTH)
 
-        for (i in 0 until (2 * PAINT_WIDTH)) {
-            for (j in 0 until (2 * PAINT_WIDTH)) {
+        if (srcRect.left <= 0) {
+            srcRect.left = 0
+        } else if (srcRect.right >= bitmap.width) {
+            srcRect.right = bitmap.width - 1
+        }
+
+        if (srcRect.top <= 0) {
+            srcRect.top = 0
+        } else if (srcRect.bottom >= bitmap.height) {
+            srcRect.bottom = bitmap.height - 1
+        }
+
+        if (dstRect.left <= 0) {
+            dstRect.left = 0
+        } else if (dstRect.right >= bitmap.width) {
+            dstRect.right = bitmap.width - 1
+        }
+
+        if (dstRect.top <= 0) {
+            dstRect.top = 0
+        } else if (dstRect.bottom >= bitmap.height) {
+            dstRect.bottom = bitmap.height - 1
+        }
+
+
+
+        for (i in 0 until min(srcRect.bottom - srcRect.top, dstRect.bottom - dstRect.top)) {
+            for (j in 0 until min(srcRect.right - srcRect.left, dstRect.right - dstRect.left)) {
                 newBitmap?.setPixel(dstRect.left + j, dstRect.top + i, bitmap.getPixel(srcRect.left + j, srcRect.top + i))
             }
         }
