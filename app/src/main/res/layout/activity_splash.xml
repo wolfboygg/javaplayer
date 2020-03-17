@@ -36,4 +36,18 @@
         android:text="CustomerView"
         android:onClick="onClick"/>
 
+    <Button
+        android:id="@+id/opengl3_sample"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="OPENGL3"
+        android:onClick="onClick"/>
+
+    <Button
+        android:id="@+id/imagedeal_sample"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="IMGAE_DEAL"
+        android:onClick="onClick"/>
+
 </LinearLayout>

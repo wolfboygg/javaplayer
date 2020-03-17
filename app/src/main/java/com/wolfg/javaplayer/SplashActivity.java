@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.ggwolf.audioplayer.AudioPlayerActivity;
+import com.ggwolf.imagedeal.ImageCopyActivty;
+import com.ggwolf.opengl.ES3SampleActivity;
 import com.wolfg.javaplayer.view.CustomerActivity;
 
 
@@ -42,6 +44,12 @@ public class SplashActivity extends AppCompatActivity {
                 break;
             case R.id.customer_view:
                 startActivity(new Intent(this, CustomerActivity.class));
+                break;
+            case R.id.opengl3_sample:
+                startActivity(new Intent(this, ES3SampleActivity.class));
+                break;
+            case R.id.imagedeal_sample:
+                startActivity(new Intent(this, ImageCopyActivty.class));
                 break;
         }
     }

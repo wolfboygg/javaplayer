@@ -1,1 +1,1 @@
-include ':app', ':filterlibrary', ':cameralibrary', ':ffmpeglibrary', ':audioplayer'
+include ':app', ':filterlibrary', ':cameralibrary', ':ffmpeglibrary', ':audioplayer', ':opengl', ':imagedeal'

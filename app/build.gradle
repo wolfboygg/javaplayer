@@ -29,6 +29,8 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     implementation project(path: ':filterlibrary')
     implementation project(path: ':cameralibrary')
+    implementation project(path: ':imagedeal')
+    implementation project(path: ':opengl')
 //    implementation project(path: ':ffmpeglibrary')
     implementation project(path: ':audioplayer')
     implementation 'ywl.ywl5320:libmusic:1.2.0'
