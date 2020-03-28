@@ -94,10 +94,17 @@ class CloneStampView @kotlin.jvm.JvmOverloads constructor(
                     var distansX = (newDestPoint.x - oldDestPoint.x).toDouble()
                     var distansY = (newDestPoint.y - oldDestPoint.y).toDouble()
 
-                    var pi_angle = atan(distansY / distansX)
+                    var pi_angle = atan(abs(distansY) / abs(distansX))
 
                     var userDistanX = cos(pi_angle) * sqrt(distansX.pow(2.toDouble()) + distansY.pow(2.toDouble()))
                     var userDistanY = sin(pi_angle) * sqrt(distansX.pow(2.toDouble()) + distansY.pow(2.toDouble()))
+
+                    if (distansX < 0) {
+                        userDistanX = -userDistanX
+                    }
+                    if (distansY < 0) {
+                        userDistanY = -userDistanY
+                    }
 
                     newSourcePoint.x = oldSourcePoint.x + userDistanX.toInt()
                     newSourcePoint.y = oldSourcePoint.y + userDistanY.toInt()
